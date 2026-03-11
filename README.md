@@ -90,23 +90,106 @@
 
 ```
 frontend/
-├── public/                 # الملفات الثابتة (صور، أيقونات)
+├── public/                          # الملفات الثابتة (صور افتراضية، أيقونات)
 ├── src/
-│   ├── app/                # صفحات التطبيق (Next.js App Router)
-│   │   ├── (auth)/         # صفحات المصادقة (login, register)
-│   │   ├── admin/          # صفحات لوحة التحكم
-│   │   ├── messages/       # نظام المراسلة
-│   │   ├── posts/          # عرض المنشورات
-│   │   └── profile/        # الملفات الشخصية
-│   ├── components/         # المكونات القابلة لإعادة الاستخدام
-│   ├── context/            # إدارة الحالة (Auth Context)
-│   ├── hooks/              # الـ Hooks المخصصة
-│   ├── services/           # خدمات التواصل مع الـ API
-│   ├── types/              # تعريفات TypeScript
-│   └── styles/             # ملفات الـ CSS والـ Globals
-├── .env.local              # المتغيرات البيئية
-├── next.config.js          # إعدادات Next.js
-└── package.json            # الاعتماديات والسكربتات
+│   ├── app/                         # صفحات التطبيق (Next.js App Router)
+│   │   ├── (auth)/                  # صفحات المصادقة (login, register, admin-login)
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── register/
+│   │   │   │   └── page.tsx
+│   │   │   └── admin-login/
+│   │   │       └── page.tsx
+│   │   ├── admin/                    # صفحات لوحة التحكم
+│   │   │   ├── analytics/
+│   │   │   │   └── page.tsx
+│   │   │   ├── messages/
+│   │   │   │   └── page.tsx
+│   │   │   ├── posts/
+│   │   │   │   └── page.tsx
+│   │   │   ├── settings/
+│   │   │   │   └── page.tsx
+│   │   │   ├── system/
+│   │   │   │   └── page.tsx
+│   │   │   ├── users/
+│   │   │   │   ├── create/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── messages/
+│   │   │   ├── [userId]/
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── posts/
+│   │   │   ├── [id]/
+│   │   │   │   └── page.tsx          # إعادة التوجيه إلى /posts?highlight=id
+│   │   │   └── page.tsx
+│   │   ├── profile/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── users/
+│   │   │   └── page.tsx
+│   │   ├── error.tsx
+│   │   ├── layout.tsx
+│   │   ├── not-found.tsx
+│   │   └── page.tsx
+│   ├── components/                    # مكونات قابلة لإعادة الاستخدام
+│   │   ├── admin/                     # مكونات خاصة بالأدمن
+│   │   │   ├── AdminHeader.tsx
+│   │   │   ├── AdminSidebar.tsx
+│   │   │   ├── RecentPosts.tsx
+│   │   │   ├── RecentUsers.tsx
+│   │   │   └── SystemHealth.tsx
+│   │   ├── layout/                    # مكونات التخطيط العام
+│   │   │   ├── Footer.tsx
+│   │   │   └── Navbar.tsx
+│   │   ├── messages/                  # مكونات الرسائل
+│   │   │   └── ChatBox.tsx
+│   │   ├── notifications/             # مكونات الإشعارات
+│   │   │   └── NotificationBell.tsx
+│   │   ├── posts/                     # مكونات المنشورات
+│   │   │   ├── PostCard.tsx
+│   │   │   ├── PostForm.tsx
+│   │   │   ├── PostsList.tsx
+│   │   │   └── ShareModal.tsx         # نافذة مشاركة المنشور
+│   │   ├── users/                     # مكونات المستخدمين
+│   │   │   ├── ProfileCard.tsx
+│   │   │   ├── UserCard.tsx
+│   │   │   └── UserList.tsx
+│   │   └── SocketInitializer.tsx
+│   ├── context/                       # React Context
+│   │   └── AuthContext.tsx
+│   ├── hooks/                          # Hooks مخصصة
+│   │   ├── useAuth.ts
+│   │   ├── usePosts.ts
+│   │   └── useProfile.ts
+│   ├── services/                       # خدمات API
+│   │   ├── api.ts
+│   │   ├── adminService.ts
+│   │   ├── followService.ts
+│   │   ├── messageService.ts
+│   │   ├── notificationService.ts
+│   │   ├── postService.ts
+│   │   ├── socketService.ts
+│   │   └── userService.ts
+│   ├── types/                          # تعريفات TypeScript
+│   │   ├── Admin.ts
+│   │   ├── Message.ts
+│   │   ├── Notification.ts
+│   │   ├── Post.ts
+│   │   └── User.ts
+│   ├── utils/                          # أدوات مساعدة
+│   │   ├── constants.ts
+│   │   ├── formatDate.ts
+│   │   └── security.ts
+│   └── styles/                         # أنماط عامة
+│       ├── globals.css
+│       └── variables.css
+├── .env.local                          # المتغيرات البيئية
+├── next.config.js                      # إعدادات Next.js
+├── package.json
+└── README.md                           # هذا الملف
 ```
 
 ---
@@ -122,41 +205,41 @@ frontend/
 ### خطوات التشغيل
 
 1. **استنساخ المستودع**
-   ```bash
-   git clone https://github.com/bzbsndndjnd/mansati-frontend.git
-   cd mansati-frontend
-   ```
+   ```bash
+   git clone https://github.com/bzbsndndjnd/mansati-frontend.git
+   cd mansati-frontend
+   ```
 
 2. **تثبيت الاعتماديات**
-   ```bash
-   npm install
-   # أو
-   yarn install
-   ```
+   ```bash
+   npm install
+   # أو
+   yarn install
+   ```
 
 3. **إعداد المتغيرات البيئية**
-   - أنشئ ملف `.env.local` في الجذر:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:5000
-   NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
-   NEXT_PUBLIC_ADMIN_USER=admin
-   NEXT_PUBLIC_ADMIN_PASS=123456
-   NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-   ```
+   - أنشئ ملف `.env.local` في الجذر:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+   NEXT_PUBLIC_ADMIN_USER=admin
+   NEXT_PUBLIC_ADMIN_PASS=123456
+   NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
+   ```
 
 4. **تشغيل خادم التطوير**
-   ```bash
-   npm run dev
-   # أو
-   yarn dev
-   ```
-   سيفتح التطبيق تلقائياً على `http://localhost:3000`.
+   ```bash
+   npm run dev
+   # أو
+   yarn dev
+   ```
+   سيفتح التطبيق تلقائياً على `http://localhost:3000`.
 
 5. **بناء للإنتاج**
-   ```bash
-   npm run build
-   npm start
-   ```
+   ```bash
+   npm run build
+   npm start
+   ```
 
 ---
 
@@ -220,12 +303,12 @@ frontend/
 import postService from '@/services/postService';
 
 const handleCreatePost = async (formData: FormData) => {
-  try {
-    const newPost = await postService.create(formData);
-    console.log('تم إنشاء المنشور:', newPost);
-  } catch (error) {
-    console.error('فشل إنشاء المنشور:', error);
-  }
+  try {
+    const newPost = await postService.create(formData);
+    console.log('تم إنشاء المنشور:', newPost);
+  } catch (error) {
+    console.error('فشل إنشاء المنشور:', error);
+  }
 };
 ```
 
@@ -279,98 +362,98 @@ const handleCreatePost = async (formData: FormData) => {
 ## 📸 جولة داخل المنصة – معرض الصور (Gallery)
 
 <details open>
-  <summary><b>🔹 أولاً: تجربة المستخدم والواجهات العامة (sh1 – sh8)</b></summary>
-  <br/>
-  <div align="center">
-    <table>
-      <tr>
-        <td align="center" width="50%"><img src="./Screenshots/sh1.png" alt="sh1" width="100%" style="border-radius:12px"/><br/><sub><strong>sh1 – واجهة تسجيل الدخول</strong>: تصميم عصري مع حقول الإدخال وزر الدخول.</sub></td>
-        <td align="center" width="50%"><img src="./Screenshots/sh2.png" alt="sh2" width="100%" style="border-radius:12px"/><br/><sub><strong>sh2 – الصفحة الرئيسية (Timeline)</strong>: عرض خلاصة المنشورات بتنسيق كارد أنيق.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh3.png" alt="sh3" width="100%" style="border-radius:12px"/><br/><sub><strong>sh3 – نظام التفاعلات (Reactions)</strong>: قائمة التفاعلات السبعة (لايك، حب، الخ).</sub></td>
-        <td align="center"><img src="./Screenshots/sh4.png" alt="sh4" width="100%" style="border-radius:12px"/><br/><sub><strong>sh4 – الملف الشخصي (User Profile)</strong>: عرض الصورة الشخصية، الغلاف، وإحصائيات المتابعة.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh5.png" alt="sh5" width="100%" style="border-radius:12px"/><br/><sub><strong>sh5 – تعديل البيانات (Edit Profile)</strong>: تغيير المعلومات الشخصية ورفع الصور.</sub></td>
-        <td align="center"><img src="./Screenshots/sh6.png" alt="sh6" width="100%" style="border-radius:12px"/><br/><sub><strong>sh6 – قائمة المحادثات (Chat List)</strong>: عرض الأشخاص المتاحين للدردشة.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh7.png" alt="sh7" width="100%" style="border-radius:12px"/><br/><sub><strong>sh7 – نافذة الدردشة (Active Chat)</strong>: فقاعات المحادثة وحالة المتصل.</sub></td>
-        <td align="center"><img src="./Screenshots/sh8.png" alt="sh8" width="100%" style="border-radius:12px"/><br/><sub><strong>sh8 – مشاركة المنشور (Share Modal)</strong>: إرسال المنشور لصديق أو نسخ الرابط.</sub></td>
-      </tr>
-    </table>
-  </div>
+  <summary><b>🔹 أولاً: تجربة المستخدم والواجهات العامة (sh1 – sh8)</b></summary>
+  <br/>
+  <div align="center">
+    <table>
+      <tr>
+        <td align="center" width="50%"><img src="./Screenshots/sh1.png" alt="sh1" width="100%" style="border-radius:12px"/><br/><sub><strong>sh1 – واجهة تسجيل الدخول</strong>: تصميم عصري مع حقول الإدخال وزر الدخول.</sub></td>
+        <td align="center" width="50%"><img src="./Screenshots/sh2.png" alt="sh2" width="100%" style="border-radius:12px"/><br/><sub><strong>sh2 – الصفحة الرئيسية (Timeline)</strong>: عرض خلاصة المنشورات بتنسيق كارد أنيق.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh3.png" alt="sh3" width="100%" style="border-radius:12px"/><br/><sub><strong>sh3 – نظام التفاعلات (Reactions)</strong>: قائمة التفاعلات السبعة (لايك، حب، الخ).</sub></td>
+        <td align="center"><img src="./Screenshots/sh4.png" alt="sh4" width="100%" style="border-radius:12px"/><br/><sub><strong>sh4 – الملف الشخصي (User Profile)</strong>: عرض الصورة الشخصية، الغلاف، وإحصائيات المتابعة.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh5.png" alt="sh5" width="100%" style="border-radius:12px"/><br/><sub><strong>sh5 – تعديل البيانات (Edit Profile)</strong>: تغيير المعلومات الشخصية ورفع الصور.</sub></td>
+        <td align="center"><img src="./Screenshots/sh6.png" alt="sh6" width="100%" style="border-radius:12px"/><br/><sub><strong>sh6 – قائمة المحادثات (Chat List)</strong>: عرض الأشخاص المتاحين للدردشة.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh7.png" alt="sh7" width="100%" style="border-radius:12px"/><br/><sub><strong>sh7 – نافذة الدردشة (Active Chat)</strong>: فقاعات المحادثة وحالة المتصل.</sub></td>
+        <td align="center"><img src="./Screenshots/sh8.png" alt="sh8" width="100%" style="border-radius:12px"/><br/><sub><strong>sh8 – مشاركة المنشور (Share Modal)</strong>: إرسال المنشور لصديق أو نسخ الرابط.</sub></td>
+      </tr>
+    </table>
+  </div>
 </details>
 
 <details>
-  <summary><b>🔹 ثانياً: لوحة تحكم الإدارة والرقابة (sh9 – sh20)</b></summary>
-  <br/>
-  <div align="center">
-    <table>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh9.png" alt="sh9" width="100%"/><br/><sub><strong>sh9 – لوحة التحكم (Admin Dashboard)</strong>: بطاقات إحصائية.</sub></td>
-        <td align="center"><img src="./Screenshots/sh10.png" alt="sh10" width="100%"/><br/><sub><strong>sh10 – إدارة المستخدمين</strong>: جدول تحكم بالمستخدمين.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh11.png" alt="sh11" width="100%"/><br/><sub><strong>sh11 – صفحة الخطأ 404</strong>: تصميم احترافي للمسار غير موجود.</sub></td>
-        <td align="center"><img src="./Screenshots/sh12.png" alt="sh12" width="100%"/><br/><sub><strong>sh12 – إحصائيات المستخدمين</strong>: رسوم بيانية تفاعلية.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh13.png" alt="sh13" width="100%"/><br/><sub><strong>sh13 – إدارة المنشورات</strong>: فلترة وحذف جماعي.</sub></td>
-        <td align="center"><img src="./Screenshots/sh14.png" alt="sh14" width="100%"/><br/><sub><strong>sh14 – إدارة الرسائل</strong>: نظرة شاملة للمحادثات.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh15.png" alt="sh15" width="100%"/><br/><sub><strong>sh15 – مراقبة النظام (System Health)</strong>: استهلاك المعالج والذاكرة.</sub></td>
-        <td align="center"><img src="./Screenshots/sh16.png" alt="sh16" width="100%"/><br/><sub><strong>sh16 – الإعدادات المتقدمة</strong>: تخصيص الأمان والخصوصية.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh17.png" alt="sh17" width="100%"/><br/><sub><strong>sh17 – إنشاء مستخدم جديد</strong>: إضافة عضو يدوياً.</sub></td>
-        <td align="center"><img src="./Screenshots/sh18.png" alt="sh18" width="100%"/><br/><sub><strong>sh18 – البحث المتقدم</strong>: فلترة معقدة لقاعدة البيانات.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh19.png" alt="sh19" width="100%"/><br/><sub><strong>sh19 – واجهة الأدمن (Sidebar)</strong>: القائمة الجانبية وتناسق الألوان.</sub></td>
-        <td align="center"><img src="./Screenshots/sh20.png" alt="sh20" width="100%"/><br/><sub><strong>sh20 – سجل النشاطات (System Logs)</strong>: تتبع الأحداث.</sub></td>
-      </tr>
-    </table>
-  </div>
+  <summary><b>🔹 ثانياً: لوحة تحكم الإدارة والرقابة (sh9 – sh20)</b></summary>
+  <br/>
+  <div align="center">
+    <table>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh9.png" alt="sh9" width="100%"/><br/><sub><strong>sh9 – لوحة التحكم (Admin Dashboard)</strong>: بطاقات إحصائية.</sub></td>
+        <td align="center"><img src="./Screenshots/sh10.png" alt="sh10" width="100%"/><br/><sub><strong>sh10 – إدارة المستخدمين</strong>: جدول تحكم بالمستخدمين.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh11.png" alt="sh11" width="100%"/><br/><sub><strong>sh11 – صفحة الخطأ 404</strong>: تصميم احترافي للمسار غير موجود.</sub></td>
+        <td align="center"><img src="./Screenshots/sh12.png" alt="sh12" width="100%"/><br/><sub><strong>sh12 – إحصائيات المستخدمين</strong>: رسوم بيانية تفاعلية.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh13.png" alt="sh13" width="100%"/><br/><sub><strong>sh13 – إدارة المنشورات</strong>: فلترة وحذف جماعي.</sub></td>
+        <td align="center"><img src="./Screenshots/sh14.png" alt="sh14" width="100%"/><br/><sub><strong>sh14 – إدارة الرسائل</strong>: نظرة شاملة للمحادثات.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh15.png" alt="sh15" width="100%"/><br/><sub><strong>sh15 – مراقبة النظام (System Health)</strong>: استهلاك المعالج والذاكرة.</sub></td>
+        <td align="center"><img src="./Screenshots/sh16.png" alt="sh16" width="100%"/><br/><sub><strong>sh16 – الإعدادات المتقدمة</strong>: تخصيص الأمان والخصوصية.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh17.png" alt="sh17" width="100%"/><br/><sub><strong>sh17 – إنشاء مستخدم جديد</strong>: إضافة عضو يدوياً.</sub></td>
+        <td align="center"><img src="./Screenshots/sh18.png" alt="sh18" width="100%"/><br/><sub><strong>sh18 – البحث المتقدم</strong>: فلترة معقدة لقاعدة البيانات.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh19.png" alt="sh19" width="100%"/><br/><sub><strong>sh19 – واجهة الأدمن (Sidebar)</strong>: القائمة الجانبية وتناسق الألوان.</sub></td>
+        <td align="center"><img src="./Screenshots/sh20.png" alt="sh20" width="100%"/><br/><sub><strong>sh20 – سجل النشاطات (System Logs)</strong>: تتبع الأحداث.</sub></td>
+      </tr>
+    </table>
+  </div>
 </details>
 
 <details>
-  <summary><b>🔹 ثالثاً: الإعدادات المتقدمة والبنية التحتية (sh21 – sh33)</b></summary>
-  <br/>
-  <div align="center">
-    <table>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh21.png" alt="sh21" width="100%"/><br/><sub><strong>sh21 – تأكيد الإجراءات</strong>: نوافذ منبثقة للحذف الآمن.</sub></td>
-        <td align="center"><img src="./Screenshots/sh22.png" alt="sh22" width="100%"/><br/><sub><strong>sh22 – تفاصيل المستخدم</strong>: تاريخ ودور ومنشورات.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh23.png" alt="sh23" width="100%"/><br/><sub><strong>sh23 – تعديل أدوار المستخدمين</strong>: تغيير الرتب مع حفظ فوري.</sub></td>
-        <td align="center"><img src="./Screenshots/sh24.png" alt="sh24" width="100%"/><br/><sub><strong>sh24 – الفلترة الذكية للمنشورات</strong>: تصفية حسب الأكثر تبليغاً.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh25.png" alt="sh25" width="100%"/><br/><sub><strong>sh25 – التنبيهات الإدارية</strong>: إشعارات النظام للأدمن.</sub></td>
-        <td align="center"><img src="./Screenshots/sh26.png" alt="sh26" width="100%"/><br/><sub><strong>sh26 – إعدادات الأمان</strong>: طول كلمة المرور وجلسات الدخول.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh27.png" alt="sh27" width="100%"/><br/><sub><strong>sh27 – تخصيص المظهر</strong>: ألوان المنصة وشعار الموقع.</sub></td>
-        <td align="center"><img src="./Screenshots/sh28.png" alt="sh28" width="100%"/><br/><sub><strong>sh28 – تصدير التقارير</strong>: استخراج بيانات النشاطات.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh29.png" alt="sh29" width="100%"/><br/><sub><strong>sh29 – تسجيل خروج الأدمن</strong>: تأكيد أمان حساب المدير.</sub></td>
-        <td align="center"><img src="./Screenshots/sh30.png" alt="sh30" width="100%"/><br/><sub><strong>sh30 – إعدادات السوبر أدمن</strong>: الصفحة الأولية لإنشاء حساب المدير الرئيسي.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh31.png" alt="sh31" width="100%"/><br/><sub><strong>sh31 – نظام التوثيق (Validation)</strong>: رسائل الخطأ الذكية عند إدخال بيانات غير صحيحة.</sub></td>
-        <td align="center"><img src="./Screenshots/sh32.png" alt="sh32" width="100%"/><br/><sub><strong>sh32 – لوحة التحكم الشاملة</strong>: عرض كامل للواجهة.</sub></td>
-      </tr>
-      <tr>
-        <td align="center"><img src="./Screenshots/sh33.png" alt="sh33" width="100%"/><br/><sub><strong>sh33 – تسجيل الخروج</strong>: مسح التوكنات بشكل آمن.</sub></td>
-        <td align="center"></td>
-      </tr>
-    </table>
-  </div>
+  <summary><b>🔹 ثالثاً: الإعدادات المتقدمة والبنية التحتية (sh21 – sh33)</b></summary>
+  <br/>
+  <div align="center">
+    <table>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh21.png" alt="sh21" width="100%"/><br/><sub><strong>sh21 – تأكيد الإجراءات</strong>: نوافذ منبثقة للحذف الآمن.</sub></td>
+        <td align="center"><img src="./Screenshots/sh22.png" alt="sh22" width="100%"/><br/><sub><strong>sh22 – تفاصيل المستخدم</strong>: تاريخ ودور ومنشورات.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh23.png" alt="sh23" width="100%"/><br/><sub><strong>sh23 – تعديل أدوار المستخدمين</strong>: تغيير الرتب مع حفظ فوري.</sub></td>
+        <td align="center"><img src="./Screenshots/sh24.png" alt="sh24" width="100%"/><br/><sub><strong>sh24 – الفلترة الذكية للمنشورات</strong>: تصفية حسب الأكثر تبليغاً.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh25.png" alt="sh25" width="100%"/><br/><sub><strong>sh25 – التنبيهات الإدارية</strong>: إشعارات النظام للأدمن.</sub></td>
+        <td align="center"><img src="./Screenshots/sh26.png" alt="sh26" width="100%"/><br/><sub><strong>sh26 – إعدادات الأمان</strong>: طول كلمة المرور وجلسات الدخول.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh27.png" alt="sh27" width="100%"/><br/><sub><strong>sh27 – تخصيص المظهر</strong>: ألوان المنصة وشعار الموقع.</sub></td>
+        <td align="center"><img src="./Screenshots/sh28.png" alt="sh28" width="100%"/><br/><sub><strong>sh28 – تصدير التقارير</strong>: استخراج بيانات النشاطات.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh29.png" alt="sh29" width="100%"/><br/><sub><strong>sh29 – تسجيل خروج الأدمن</strong>: تأكيد أمان حساب المدير.</sub></td>
+        <td align="center"><img src="./Screenshots/sh30.png" alt="sh30" width="100%"/><br/><sub><strong>sh30 – إعدادات السوبر أدمن</strong>: الصفحة الأولية لإنشاء حساب المدير الرئيسي.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh31.png" alt="sh31" width="100%"/><br/><sub><strong>sh31 – نظام التوثيق (Validation)</strong>: رسائل الخطأ الذكية عند إدخال بيانات غير صحيحة.</sub></td>
+        <td align="center"><img src="./Screenshots/sh32.png" alt="sh32" width="100%"/><br/><sub><strong>sh32 – لوحة التحكم الشاملة</strong>: عرض كامل للواجهة.</sub></td>
+      </tr>
+      <tr>
+        <td align="center"><img src="./Screenshots/sh33.png" alt="sh33" width="100%"/><br/><sub><strong>sh33 – تسجيل الخروج</strong>: مسح التوكنات بشكل آمن.</sub></td>
+        <td align="center"></td>
+      </tr>
+    </table>
+  </div>
 </details>
 
 ---
@@ -404,7 +487,7 @@ const handleCreatePost = async (formData: FormData) => {
 
 ## 👤 المؤلف (Author)
 
-**محمد محمد محمد قنن**  
+**محمد محمد محمد قنن**  
 **Mohammed Mohammed Mohammed Qannan**
 
 Frontend Developer متخصص في بناء تطبيقات الويب باستخدام React و Next.js و TypeScript. أمتلك خبرة في تصميم واجهات المستخدم، تحسين الأداء، ودمج الأنظمة المعقدة. أسعى دائماً لتطبيق أفضل ممارسات البرمجة وأمان التطبيقات لضمان تقديم منتجات عالية الجودة.
@@ -478,7 +561,7 @@ SOFTWARE.
 
 ---
 
-## 🙏 الشكر والتقدير (Acknowledgements)
+##  الشكر والتقدير (Acknowledgements)
 
 أشكر كل من ساهم في دعمي وتشجيعي لإتمام هذا المشروع. شكر خاص لمجتمع المطورين على المصادر المفتوحة التي ألهمتني وساعدتني في بناء هذا العمل.
 
@@ -500,7 +583,7 @@ SOFTWARE.
 
 ---
 
-**منصتي** – لأن التواصل يستحق الأفضل.  
+**منصتي** – لأن التواصل يستحق الأفضل.  
 **بُني بعناية ❤️ لتقديم تجربة عربية أصيلة.**
 
 © 2026 محمد محمد محمد قنن. جميع الحقوق محفوظة.
