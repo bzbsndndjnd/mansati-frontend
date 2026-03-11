@@ -1,0 +1,459 @@
+/* components/admin/AdminSidebar.module.css */
+
+
+/* 👑 مسؤول: تنسيقات القائمة الجانبية */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    color: #f8fafc;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+
+/* تخصيص شريط التمرير */
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #334155;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 2px;
+}
+
+
+/* خلفية مظللة للجوال */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* زر التصغير/التوسيع */
+
+.toggleButton {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.toggleButton:hover {
+    background: #475569;
+    transform: scale(1.05);
+}
+
+.toggleIcon {
+    width: 20px;
+    height: 14px;
+    position: relative;
+}
+
+.toggleIcon span {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #f8fafc;
+    border-radius: 1px;
+    transition: all 0.3s;
+}
+
+.toggleIcon span:nth-child(1) {
+    top: 0;
+}
+
+.toggleIcon span:nth-child(2) {
+    top: 6px;
+}
+
+.toggleIcon span:nth-child(3) {
+    top: 12px;
+}
+
+.sidebar.collapsed .toggleIcon span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 4px);
+}
+
+.sidebar.collapsed .toggleIcon span:nth-child(2) {
+    opacity: 0;
+}
+
+.sidebar.collapsed .toggleIcon span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+}
+
+
+/* الشعار */
+
+.logo {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 1rem;
+}
+
+.logoIcon {
+    font-size: 2.5rem;
+    color: #3b82f6;
+    margin-bottom: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+.logo h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0.5rem 0 0.25rem;
+    color: #f8fafc;
+}
+
+.logo p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+
+/* معلومات المستخدم */
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: #334155;
+    border-radius: 1rem;
+    margin: 0 1rem 1.5rem;
+    border: 1px solid #475569;
+}
+
+.userAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #3b82f6;
+}
+
+.userAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.userDetails h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #f8fafc;
+}
+
+.userDetails p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+}
+
+.userRole {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border-radius: 1rem;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+
+/* قائمة التنقل */
+
+.nav {
+    padding: 0 1rem;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.3s;
+    margin-bottom: 0.25rem;
+    position: relative;
+}
+
+.navItem:hover {
+    background: #334155;
+    color: #f8fafc;
+    transform: translateX(-4px);
+}
+
+.navItem.active {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.navIcon {
+    font-size: 1.25rem;
+    min-width: 1.5rem;
+}
+
+.navLabel {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+
+/* الشارات */
+
+.navBadge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.navBadgeCollapsed {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ef4444;
+    color: white;
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.5rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    min-width: 1.2rem;
+    text-align: center;
+    border: 2px solid #1e293b;
+}
+
+
+/* الفوتر */
+
+.footer {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #334155;
+}
+
+.footerLink {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.3s;
+    margin-bottom: 0.5rem;
+}
+
+.footerLink:hover {
+    background: #334155;
+    color: #f8fafc;
+}
+
+.footerIcon {
+    font-size: 1.25rem;
+}
+
+.logoutButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    color: #ef4444;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 0.75rem;
+    transition: all 0.3s;
+}
+
+.logoutButton:hover {
+    background: rgba(239, 68, 68, 0.1);
+    transform: translateX(-4px);
+}
+
+.logoutIcon {
+    font-size: 1.25rem;
+}
+
+
+/* نافذة تأكيد تسجيل الخروج */
+
+.confirmDialog {
+    position: absolute;
+    bottom: 5rem;
+    left: 1rem;
+    right: 1rem;
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.confirmDialog p {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #f8fafc;
+    font-size: 0.95rem;
+}
+
+.confirmActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.confirmYes,
+.confirmNo {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.confirmYes {
+    background: #ef4444;
+    color: white;
+}
+
+.confirmYes:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+.confirmNo {
+    background: #334155;
+    color: #f8fafc;
+}
+
+.confirmNo:hover {
+    background: #475569;
+    transform: translateY(-2px);
+}
+
+
+/* تحسينات للشاشات المتوسطة */
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+        transform: translateX(100%);
+    }
+    .sidebar:not(.collapsed) {
+        transform: translateX(0);
+    }
+    .sidebar.collapsed {
+        transform: translateX(100%);
+    }
+}
+
+
+/* تحسينات للشاشات الصغيرة */
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100%;
+    }
+    .userInfo {
+        padding: 0.75rem;
+    }
+    .userAvatar {
+        width: 40px;
+        height: 40px;
+    }
+    .userDetails h3 {
+        font-size: 0.85rem;
+    }
+    .userDetails p {
+        font-size: 0.7rem;
+    }
+}

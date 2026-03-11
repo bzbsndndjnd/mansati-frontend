@@ -1,0 +1,603 @@
+/* app/admin/setup/page.module.css */
+
+
+/* ⚙️ صفحة إعداد الأدمن - تصميم احترافي وجذاب */
+
+
+/* @version 1.0.0 */
+
+
+/* @lastUpdated 2026 */
+
+
+/* ============================================================================
+   المتغيرات الأساسية (CSS Variables)
+   ============================================================================ */
+
+:root {
+    /* الألوان الأساسية */
+    --primary-50: #eef2ff;
+    --primary-100: #e0e7ff;
+    --primary-200: #c7d2fe;
+    --primary-300: #a5b4fc;
+    --primary-400: #818cf8;
+    --primary-500: #6366f1;
+    --primary-600: #4f46e5;
+    --primary-700: #4338ca;
+    --primary-800: #3730a3;
+    --primary-900: #312e81;
+    /* ألوان النجاح */
+    --success-50: #ecfdf5;
+    --success-100: #d1fae5;
+    --success-200: #a7f3d0;
+    --success-300: #6ee7b7;
+    --success-400: #34d399;
+    --success-500: #10b981;
+    --success-600: #059669;
+    --success-700: #047857;
+    --success-800: #065f46;
+    --success-900: #064e3b;
+    /* ألوان التحذير والخطأ */
+    --error-50: #fef2f2;
+    --error-100: #fee2e2;
+    --error-200: #fecaca;
+    --error-300: #fca5a5;
+    --error-400: #f87171;
+    --error-500: #ef4444;
+    --error-600: #dc2626;
+    --error-700: #b91c1c;
+    --error-800: #991b1b;
+    --error-900: #7f1d1d;
+    /* ألوان محايدة */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    /* ألوان خاصة */
+    --admin-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --admin-gradient-hover: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    /* الظلال */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    /* الأحجام */
+    --border-radius-sm: 0.375rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-xl: 1rem;
+    --border-radius-2xl: 1.5rem;
+    --border-radius-full: 9999px;
+    /* المسافات */
+    --spacing-1: 0.25rem;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.75rem;
+    --spacing-4: 1rem;
+    --spacing-5: 1.25rem;
+    --spacing-6: 1.5rem;
+    --spacing-8: 2rem;
+    --spacing-10: 2.5rem;
+    --spacing-12: 3rem;
+    --spacing-16: 4rem;
+    --spacing-20: 5rem;
+    /* الخطوط */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    /* الانتقالات */
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 300ms ease-in-out;
+    --transition-slow: 500ms ease-in-out;
+}
+
+
+/* ============================================================================
+   الحاوية الرئيسية
+   ============================================================================ */
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    direction: rtl;
+}
+
+
+/* تأثير الخلفية المتحركة */
+
+.container::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: rotate 30s linear infinite;
+    z-index: 1;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.container>* {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* ============================================================================
+   العنوان الرئيسي
+   ============================================================================ */
+
+.container h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: var(--spacing-6);
+    text-align: center;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.6s ease-out;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ============================================================================
+   بطاقات الحالة
+   ============================================================================ */
+
+.statusCard,
+.setupCard,
+.loginCard {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-2xl);
+    padding: var(--spacing-8);
+    width: 100%;
+    max-width: 500px;
+    margin: var(--spacing-4) auto;
+    box-shadow: var(--shadow-2xl);
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.statusCard {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+    border-right: 4px solid var(--primary-500);
+}
+
+.setupCard {
+    border-right: 4px solid var(--success-500);
+}
+
+.loginCard {
+    border-right: 4px solid var(--primary-600);
+}
+
+
+/* ============================================================================
+   عناوين البطاقات
+   ============================================================================ */
+
+.statusCard h2,
+.setupCard h2,
+.loginCard h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-6);
+    text-align: center;
+    position: relative;
+    padding-bottom: var(--spacing-4);
+    letter-spacing: -0.025em;
+}
+
+.statusCard h2::after,
+.setupCard h2::after,
+.loginCard h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--admin-gradient);
+    border-radius: var(--border-radius-full);
+}
+
+.setupCard h2::after {
+    background: var(--success-gradient);
+}
+
+.loginCard h2::after {
+    background: var(--admin-gradient);
+}
+
+
+/* ============================================================================
+   محتوى البطاقات
+   ============================================================================ */
+
+.statusCard p,
+.setupCard p,
+.loginCard p {
+    font-size: 1.1rem;
+    color: var(--gray-700);
+    margin: var(--spacing-3) 0;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-base);
+}
+
+.statusCard p:hover,
+.setupCard p:hover,
+.loginCard p:hover {
+    transform: translateX(-4px);
+    background: white;
+    box-shadow: var(--shadow-md);
+}
+
+
+/* ============================================================================
+   الأزرار
+   ============================================================================ */
+
+.createButton,
+.loginButton {
+    width: 100%;
+    padding: var(--spacing-4) var(--spacing-6);
+    border: none;
+    border-radius: var(--border-radius-full);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin-top: var(--spacing-6);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+}
+
+.createButton {
+    background: var(--success-gradient);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.loginButton {
+    background: var(--admin-gradient);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+
+/* تأثير الزر المتحرك */
+
+.createButton::before,
+.loginButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.createButton:hover::before,
+.loginButton:hover::before {
+    left: 100%;
+}
+
+.createButton:hover,
+.loginButton:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.createButton:active,
+.loginButton:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.createButton:disabled,
+.loginButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ============================================================================
+   رسائل الخطأ
+   ============================================================================ */
+
+.error {
+    background: var(--error-50);
+    border-right: 4px solid var(--error-500);
+    color: var(--error-700);
+    padding: var(--spacing-4) var(--spacing-6);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-6);
+    font-size: 1rem;
+    font-weight: 500;
+    width: 100%;
+    max-width: 500px;
+    animation: shake 0.5s ease-out;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+
+/* ============================================================================
+   حالة التحميل
+   ============================================================================ */
+
+.loadingContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: var(--spacing-4);
+}
+
+.loadingSpinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingContainer p {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+
+/* ============================================================================
+   تصميم متجاوب للموبايل
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .container h1 {
+        font-size: 2rem;
+        padding: 0 var(--spacing-4);
+    }
+    .statusCard,
+    .setupCard,
+    .loginCard {
+        padding: var(--spacing-6);
+        margin: var(--spacing-3);
+    }
+    .statusCard h2,
+    .setupCard h2,
+    .loginCard h2 {
+        font-size: 1.5rem;
+    }
+    .statusCard p,
+    .setupCard p,
+    .loginCard p {
+        font-size: 1rem;
+        padding: var(--spacing-2) var(--spacing-3);
+    }
+    .createButton,
+    .loginButton {
+        padding: var(--spacing-3) var(--spacing-4);
+        font-size: 1rem;
+    }
+    .loadingSpinner {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container h1 {
+        font-size: 1.5rem;
+    }
+    .statusCard,
+    .setupCard,
+    .loginCard {
+        padding: var(--spacing-4);
+    }
+    .statusCard h2,
+    .setupCard h2,
+    .loginCard h2 {
+        font-size: 1.3rem;
+    }
+    .error {
+        padding: var(--spacing-3) var(--spacing-4);
+        font-size: 0.9rem;
+    }
+}
+
+
+/* ============================================================================
+   تأثيرات إضافية
+   ============================================================================ */
+
+
+/* توهج عند التحويم */
+
+.statusCard:hover,
+.setupCard:hover,
+.loginCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2xl);
+    transition: var(--transition-base);
+}
+
+
+/* شريط تقدم متحرك */
+
+.progressBar {
+    width: 100%;
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+    margin-top: var(--spacing-4);
+}
+
+.progressBarFill {
+    height: 100%;
+    background: var(--success-gradient);
+    animation: progress 2s ease-in-out infinite;
+    width: 50%;
+}
+
+@keyframes progress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+
+/* دعم الوضع الداكن */
+
+@media (prefers-color-scheme: dark) {
+    .statusCard,
+    .setupCard,
+    .loginCard {
+        background: rgba(31, 41, 55, 0.95);
+    }
+    .statusCard h2,
+    .setupCard h2,
+    .loginCard h2 {
+        color: white;
+    }
+    .statusCard p,
+    .setupCard p,
+    .loginCard p {
+        background: var(--gray-800);
+        color: var(--gray-200);
+    }
+    .statusCard p:hover,
+    .setupCard p:hover,
+    .loginCard p:hover {
+        background: var(--gray-700);
+    }
+    .error {
+        background: rgba(127, 29, 29, 0.9);
+        color: var(--error-200);
+        border-right-color: var(--error-400);
+    }
+}
+
+
+/* تأثيرات الوصول (Accessibility) */
+
+.createButton:focus-visible,
+.loginButton:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 2px;
+}
+
+
+/* دعم الـ RTL */
+
+[dir="rtl"] .statusCard p:hover,
+[dir="rtl"] .setupCard p:hover,
+[dir="rtl"] .loginCard p:hover {
+    transform: translateX(4px);
+}

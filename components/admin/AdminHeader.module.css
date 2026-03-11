@@ -1,0 +1,316 @@
+/* components/admin/AdminHeader.module.css */
+
+
+/* 👑 مسؤول: تنسيقات شريط العنوان العلوي */
+
+.header {
+    background: linear-gradient(135deg, #1e293b, #2d3748);
+    border-bottom: 1px solid #334155;
+    padding: 0.75rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.headerContainer {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+
+/* ===== شريط البحث ===== */
+
+.searchBar {
+    flex: 1;
+    max-width: 600px;
+    display: flex;
+    position: relative;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-left: 3rem;
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 2rem;
+    color: #f8fafc;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.searchInput::placeholder {
+    color: #94a3b8;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #1e293b;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.searchButton {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.searchButton:hover {
+    color: #3b82f6;
+}
+
+
+/* ===== القسم الأيمن ===== */
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+
+/* ===== زر الإشعارات ===== */
+
+.notificationBtn {
+    position: relative;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notificationBtn:hover {
+    color: #3b82f6;
+    background: #334155;
+}
+
+.notificationBadge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ef4444;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    border: 2px solid #1e293b;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/* ===== قائمة المستخدم ===== */
+
+.userMenu {
+    position: relative;
+}
+
+.userBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    transition: all 0.3s;
+}
+
+.userBtn:hover {
+    background: #334155;
+}
+
+.userAvatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3b82f6;
+}
+
+.userIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #94a3b8;
+}
+
+.userName {
+    color: #f8fafc;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+
+/* ===== القائمة المنسدلة ===== */
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 280px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: slideDown 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownHeader {
+    padding: 1rem;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+}
+
+.dropdownName {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.dropdownEmail {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.dropdownMenu {
+    padding: 0.5rem;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    color: #f8fafc;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+}
+
+.dropdownItem:hover {
+    background: #334155;
+    transform: translateX(-5px);
+}
+
+.dropdownItem svg {
+    font-size: 1.1rem;
+    color: #94a3b8;
+}
+
+.dropdownItem:hover svg {
+    color: #3b82f6;
+}
+
+.logoutItem {
+    color: #ef4444;
+}
+
+.logoutItem:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.logoutItem:hover svg {
+    color: #ef4444;
+}
+
+.dropdownDivider {
+    height: 1px;
+    background: #334155;
+    margin: 0.5rem 0;
+}
+
+
+/* ===== تحسينات للشاشات المتوسطة ===== */
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+    .searchBar {
+        max-width: 300px;
+    }
+    .userName {
+        display: none;
+    }
+    .dropdown {
+        left: auto;
+        right: 0;
+        width: 250px;
+    }
+}
+
+
+/* ===== تحسينات للشاشات الصغيرة ===== */
+
+@media (max-width: 480px) {
+    .searchBar {
+        display: none;
+    }
+    .rightSection {
+        gap: 1rem;
+    }
+    .userBtn {
+        padding: 0.5rem;
+    }
+    .dropdown {
+        width: 220px;
+    }
+}

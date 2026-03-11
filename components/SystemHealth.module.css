@@ -1,0 +1,557 @@
+/* components/admin/SystemHealth.module.css */
+
+
+/* 👑 مسؤول: تنسيقات حالة النظام */
+
+.container {
+    background: #1e293b;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin-top: 2rem;
+}
+
+
+/* ===== رأس القسم ===== */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f8fafc;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 2px;
+}
+
+.lastUpdated {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    padding: 0.25rem 0.75rem;
+    background: #334155;
+    border-radius: 2rem;
+    border: 1px solid #475569;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+/* ===== زر التحديث ===== */
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 2rem;
+    color: #f8fafc;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.refreshButton:hover:not(:disabled) {
+    background: #475569;
+    transform: translateY(-2px);
+}
+
+.refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ===== تحديث تلقائي ===== */
+
+.autoRefreshLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.autoRefreshCheckbox {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+
+/* ===== شبكة الخدمات ===== */
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.serviceCard {
+    background: #334155;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid #475569;
+    transition: all 0.3s;
+}
+
+.serviceCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: #3b82f6;
+}
+
+.serviceHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.serviceIcon {
+    font-size: 1.25rem;
+    color: #3b82f6;
+}
+
+.serviceHeader h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.serviceStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.statusIconHealthy {
+    color: #10b981;
+    font-size: 1.25rem;
+    animation: pulse 2s infinite;
+}
+
+.statusIconWarning {
+    color: #f59e0b;
+    font-size: 1.25rem;
+    animation: pulse 2s infinite;
+}
+
+.statusIconDanger {
+    color: #ef4444;
+    font-size: 1.25rem;
+    animation: pulse 2s infinite;
+}
+
+.serviceStatusText {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+}
+
+.serviceStatusText.healthy {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.serviceStatusText.degraded {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.serviceStatusText.down {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+
+/* ===== قسم المقاييس ===== */
+
+.metricsSection {
+    margin-bottom: 2rem;
+}
+
+.metricsSection h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 1rem;
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.metricCard {
+    background: #334155;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid #475569;
+    transition: all 0.3s;
+}
+
+.metricCard:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f6;
+}
+
+.metricHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.metricIcon {
+    color: #3b82f6;
+    font-size: 1rem;
+}
+
+.metricLabel {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.metricValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 0.75rem;
+}
+
+
+/* ===== شريط التقدم ===== */
+
+.progressBar {
+    width: 100%;
+    height: 6px;
+    background: #1e293b;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progressSuccess {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.progressWarning {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.progressDanger {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+
+/* ===== قسم التنبيهات ===== */
+
+.alertsSection h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 1rem;
+}
+
+.alertsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.alertItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #334155;
+    border-radius: 0.75rem;
+    border: 1px solid #475569;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alertIconSuccess {
+    color: #10b981;
+    font-size: 1rem;
+}
+
+.alertIconWarning {
+    color: #f59e0b;
+    font-size: 1rem;
+}
+
+.alertIconDanger {
+    color: #ef4444;
+    font-size: 1rem;
+}
+
+.alertItem span {
+    color: #f8fafc;
+    font-size: 0.9rem;
+}
+
+
+/* ===== حالات التحميل ===== */
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: #1e293b;
+    border-radius: 1.5rem;
+    border: 1px solid #334155;
+}
+
+.loadingSpinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #334155;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.loading p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+
+/* ===== حالات الخطأ ===== */
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: #1e293b;
+    border-radius: 1.5rem;
+    border: 1px solid #ef4444;
+    color: #f8fafc;
+}
+
+.error svg {
+    color: #ef4444;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.error p {
+    color: #f8fafc;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.retryButton {
+    padding: 0.5rem 1.5rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.retryButton:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+
+/* ===== تحسينات للشاشات المتوسطة ===== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .headerTitle {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .headerActions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .servicesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .metricsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ===== تحسينات للشاشات الصغيرة ===== */
+
+@media (max-width: 480px) {
+    .servicesGrid {
+        grid-template-columns: 1fr;
+    }
+    .metricsGrid {
+        grid-template-columns: 1fr;
+    }
+    .title {
+        font-size: 1.1rem;
+    }
+    .lastUpdated {
+        font-size: 0.7rem;
+    }
+    .refreshButton {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    .autoRefreshLabel {
+        font-size: 0.8rem;
+    }
+    .metricValue {
+        font-size: 1.25rem;
+    }
+}
+
+
+/* ===== دعم الوضع الداكن ===== */
+
+@media (prefers-color-scheme: light) {
+    .container {
+        background: #ffffff;
+        border-color: #e2e8f0;
+    }
+    .title {
+        color: #0f172a;
+    }
+    .lastUpdated {
+        background: #f1f5f9;
+        color: #64748b;
+        border-color: #e2e8f0;
+    }
+    .refreshButton {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #0f172a;
+    }
+    .refreshButton:hover:not(:disabled) {
+        background: #e2e8f0;
+    }
+    .autoRefreshLabel {
+        color: #64748b;
+    }
+    .serviceCard {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+    }
+    .serviceHeader h3 {
+        color: #0f172a;
+    }
+    .metricCard {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+    }
+    .metricLabel {
+        color: #64748b;
+    }
+    .metricValue {
+        color: #0f172a;
+    }
+    .progressBar {
+        background: #e2e8f0;
+    }
+    .alertItem {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+    }
+    .alertItem span {
+        color: #0f172a;
+    }
+    .loading {
+        background: #ffffff;
+        border-color: #e2e8f0;
+    }
+    .loading p {
+        color: #64748b;
+    }
+    .error {
+        background: #ffffff;
+        border-color: #ef4444;
+    }
+    .error p {
+        color: #0f172a;
+    }
+}

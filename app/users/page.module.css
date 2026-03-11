@@ -1,0 +1,390 @@
+/* app/users/page.module.css */
+
+
+/* أنماط صفحة المستخدمين */
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+
+/* الهيدر */
+
+.header {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.headerContent {
+    flex: 1;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.titleIcon {
+    color: #667eea;
+    font-size: 32px;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.refreshButton {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background: #f8f9fa;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.refreshButton:hover {
+    background: #667eea;
+    color: white;
+    transform: rotate(180deg);
+}
+
+.refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* قسم البحث */
+
+.searchSection {
+    margin-bottom: 30px;
+    animation: fadeIn 0.5s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.searchBox {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.searchIcon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 18px 55px 18px 25px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+}
+
+.searchInput:focus {
+    outline: none;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+}
+
+.searchInput::placeholder {
+    color: #999;
+}
+
+.searchSpinner {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.searchStats {
+    text-align: center;
+    margin-top: 15px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+/* رسالة الخطأ */
+
+.errorMessage {
+    background: #fee;
+    color: #e53e3e;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    animation: shake 0.5s ease-out;
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.errorMessage button {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 30px;
+    background: #e53e3e;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.errorMessage button:hover {
+    background: #c53030;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+}
+
+
+/* حالات التحميل */
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.loadingSpinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f0f0f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loadingContainer p {
+    color: #666;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+
+/* تصميم متجاوب */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    .header {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    .title {
+        font-size: 28px;
+        justify-content: center;
+    }
+    .titleIcon {
+        font-size: 24px;
+    }
+    .subtitle {
+        font-size: 16px;
+    }
+    .refreshButton {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    .searchInput {
+        padding: 15px 45px 15px 20px;
+        font-size: 15px;
+    }
+    .searchIcon {
+        font-size: 18px;
+        right: 15px;
+    }
+    .searchSpinner {
+        width: 20px;
+        height: 20px;
+        left: 15px;
+    }
+    .loadingSpinner {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+/* الوضع الداكن */
+
+@media (prefers-color-scheme: dark) {
+    .container {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    .header {
+        background: #2a2a3a;
+    }
+    .title {
+        color: #fff;
+    }
+    .subtitle {
+        color: #aaa;
+    }
+    .refreshButton {
+        background: #3a3a4a;
+        color: #fff;
+    }
+    .refreshButton:hover {
+        background: #667eea;
+    }
+    .searchInput {
+        background: #2a2a3a;
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .searchInput::placeholder {
+        color: #666;
+    }
+    .searchIcon {
+        color: #aaa;
+    }
+    .searchStats {
+        color: #ddd;
+    }
+    .errorMessage {
+        background: #442;
+        color: #ff6b6b;
+    }
+    .loadingContainer {
+        background: #2a2a3a;
+    }
+    .loadingContainer p {
+        color: #aaa;
+    }
+}
+
+
+/* تأثيرات إضافية */
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.userList {
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,527 @@
+/* ==========================================================================
+   NotificationBell.module.css
+   ملف تصميم مكون جرس الإشعارات - نسخة احترافية كاملة
+   الإصدار: 2.0.0 | آخر تحديث: 2026
+   ========================================================================== */
+
+
+/* ===== المتغيرات ===== */
+
+:root {
+    --notif-primary: #3b82f6;
+    --notif-primary-dark: #2563eb;
+    --notif-primary-light: #60a5fa;
+    --notif-success: #10b981;
+    --notif-warning: #f59e0b;
+    --notif-danger: #ef4444;
+    --notif-bg: #1e293b;
+    --notif-bg-hover: #2d3a4f;
+    --notif-text: #f8fafc;
+    --notif-text-secondary: #cbd5e1;
+    --notif-text-muted: #94a3b8;
+    --notif-border: #334155;
+    --notif-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --notif-shadow-hover: 0 15px 40px rgba(59, 130, 246, 0.2);
+    --notif-transition: 0.3s ease;
+}
+
+
+/* ===== الحاوية الرئيسية ===== */
+
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+
+/* ===== زر الجرس ===== */
+
+.bellButton {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    position: relative;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--notif-transition);
+    color: var(--notif-text-muted);
+}
+
+.bellButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--notif-text);
+    transform: translateY(-2px);
+}
+
+.bellButton:active {
+    transform: translateY(0);
+}
+
+.bellIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: all var(--notif-transition);
+}
+
+.bellButton:hover .bellIcon {
+    transform: rotate(15deg) scale(1.1);
+}
+
+
+/* ===== شارة العدد ===== */
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--notif-danger), #dc2626);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    border: 2px solid var(--notif-bg);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+
+/* ===== القائمة المنسدلة ===== */
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    max-width: 90vw;
+    background: var(--notif-bg);
+    border-radius: 1rem;
+    box-shadow: var(--notif-shadow);
+    border: 1px solid var(--notif-border);
+    overflow: hidden;
+    z-index: 1000;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+
+/* ===== رأس القائمة ===== */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--notif-border);
+    background: linear-gradient(135deg, #2d3a4f, #1e293b);
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--notif-text);
+}
+
+.markAllButton {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--notif-border);
+    border-radius: 1.5rem;
+    padding: 0.25rem 0.75rem;
+    color: var(--notif-text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all var(--notif-transition);
+}
+
+.markAllButton:hover {
+    background: var(--notif-primary);
+    color: white;
+    border-color: var(--notif-primary);
+    transform: translateY(-2px);
+}
+
+.markAllButton:active {
+    transform: translateY(0);
+}
+
+.markAllButton svg {
+    font-size: 0.8rem;
+}
+
+
+/* ===== قائمة الإشعارات ===== */
+
+.notificationList {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+
+/* تخصيص شريط التمرير */
+
+.notificationList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notificationList::-webkit-scrollbar-track {
+    background: var(--notif-border);
+    border-radius: 3px;
+}
+
+.notificationList::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--notif-primary), #8b5cf6);
+    border-radius: 3px;
+}
+
+.notificationList::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--notif-primary-dark), #7c3aed);
+}
+
+
+/* ===== عنصر الإشعار ===== */
+
+.notificationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all var(--notif-transition);
+    position: relative;
+    border: 1px solid transparent;
+    margin-bottom: 0.25rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notificationItem:hover {
+    background: var(--notif-bg-hover);
+    border-color: var(--notif-primary);
+    transform: translateX(-4px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.notificationItem.unread {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.notificationItem.unread:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+
+/* ===== الصورة الرمزية ===== */
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all var(--notif-transition);
+}
+
+.notificationItem:hover .avatar {
+    border-color: var(--notif-primary);
+    transform: scale(1.05);
+}
+
+.avatarImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--notif-primary), #8b5cf6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+
+/* ===== محتوى الإشعار ===== */
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message {
+    font-size: 0.9rem;
+    color: var(--notif-text);
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.message strong {
+    color: var(--notif-primary);
+    font-weight: 600;
+    margin-left: 0.25rem;
+}
+
+.time {
+    font-size: 0.7rem;
+    color: var(--notif-text-muted);
+    display: block;
+}
+
+
+/* ===== نقطة غير مقروء ===== */
+
+.unreadDot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--notif-primary);
+    border-radius: 50%;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    animation: pulse 2s infinite;
+}
+
+
+/* ===== حالات خاصة ===== */
+
+.loading,
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--notif-text-muted);
+    text-align: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--notif-border);
+    border-top-color: var(--notif-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.emptyIcon {
+    font-size: 2rem;
+    opacity: 0.5;
+    animation: float 3s infinite;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.empty p {
+    font-size: 0.9rem;
+    color: var(--notif-text-muted);
+}
+
+
+/* ===== زر تحميل المزيد ===== */
+
+.loadMoreButton {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background: var(--notif-bg-hover);
+    border: 1px solid var(--notif-border);
+    border-radius: 0.5rem;
+    color: var(--notif-text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--notif-transition);
+}
+
+.loadMoreButton:hover:not(:disabled) {
+    background: var(--notif-primary);
+    color: white;
+    border-color: var(--notif-primary);
+    transform: translateY(-2px);
+}
+
+.loadMoreButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ===== تحسينات للشاشات المتوسطة ===== */
+
+@media (max-width: 768px) {
+    .dropdown {
+        width: 320px;
+        left: auto;
+        right: 0;
+        transform: none;
+    }
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .notificationItem {
+        padding: 0.5rem;
+    }
+    .avatar {
+        width: 2rem;
+        height: 2rem;
+    }
+    .message {
+        font-size: 0.8rem;
+    }
+}
+
+
+/* ===== تحسينات للشاشات الصغيرة ===== */
+
+@media (max-width: 480px) {
+    .dropdown {
+        width: 280px;
+    }
+    .header {
+        padding: 0.75rem;
+    }
+    .header h3 {
+        font-size: 0.9rem;
+    }
+    .markAllButton {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    .notificationItem {
+        padding: 0.5rem;
+    }
+    .avatar {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    .message {
+        font-size: 0.75rem;
+    }
+    .time {
+        font-size: 0.6rem;
+    }
+    .unreadDot {
+        width: 0.4rem;
+        height: 0.4rem;
+    }
+    .emptyIcon {
+        font-size: 1.5rem;
+    }
+    .empty p {
+        font-size: 0.8rem;
+    }
+}
+
+
+/* ===== دعم الوضع الفاتح ===== */
+
+@media (prefers-color-scheme: light) {
+     :root {
+        --notif-bg: #ffffff;
+        --notif-bg-hover: #f8fafc;
+        --notif-text: #0f172a;
+        --notif-text-secondary: #334155;
+        --notif-text-muted: #64748b;
+        --notif-border: #e2e8f0;
+        --notif-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    .bellButton {
+        color: var(--notif-text-muted);
+    }
+    .bellButton:hover {
+        background: #f1f5f9;
+        color: var(--notif-primary);
+    }
+    .header {
+        background: linear-gradient(135deg, #f8fafc, #ffffff);
+    }
+    .markAllButton {
+        background: #f1f5f9;
+    }
+    .notificationItem:hover {
+        background: #f8fafc;
+    }
+    .notificationItem.unread {
+        background: rgba(59, 130, 246, 0.05);
+    }
+    .loading,
+    .empty {
+        background: #ffffff;
+    }
+    .loadMoreButton {
+        background: #f1f5f9;
+    }
+}

@@ -1,0 +1,207 @@
+.profilePage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+}
+
+
+/* ===== الشريط الجانبي ===== */
+
+.profileSidebar {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.statusBadge {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.statusBadge.online {
+    color: #00a86b;
+    background: #e8f5e9;
+}
+
+.statusBadge.offline {
+    color: #666;
+    background: #f5f5f5;
+}
+
+
+/* ===== المحتوى الرئيسي ===== */
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* ===== قسم البوستات ===== */
+
+.postsSection {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.postsSection h2 {
+    margin: 0 0 20px 0;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e4e6eb;
+    padding-bottom: 12px;
+}
+
+.createPost {
+    margin-bottom: 24px;
+}
+
+
+/* ===== قسم المحادثة ===== */
+
+.messagesSection {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.messagesHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.messagesHeader h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.fullscreenButton {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.fullscreenButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+
+/* ===== حالات التحميل والخطأ ===== */
+
+.loadingContainer,
+.errorContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.loadingSpinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorContainer h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.errorContainer p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.errorContainer button {
+    padding: 12px 30px;
+    background: white;
+    color: #764ba2;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.errorContainer button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ===== Responsive ===== */
+
+@media (max-width: 768px) {
+    .profilePage {
+        padding: 10px;
+    }
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .profileSidebar {
+        position: static;
+    }
+    .messagesHeader {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        grid-template-columns: 300px 1fr;
+    }
+}

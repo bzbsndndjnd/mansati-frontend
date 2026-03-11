@@ -1,0 +1,233 @@
+.container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    direction: rtl;
+}
+
+.header {
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #1f2937;
+    font-size: 1.75rem;
+}
+
+.titleIcon {
+    color: #3b82f6;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+
+/* رسائل الخطأ */
+
+.errorBanner {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+
+/* تخطيط النموذج */
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.required {
+    color: #ef4444;
+    margin-right: 0.2rem;
+}
+
+.input,
+.select,
+.passwordInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.input:focus,
+.passwordInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.invalid {
+    border-color: #ef4444;
+}
+
+
+/* كلمة المرور والقوة */
+
+.passwordWrapper {
+    position: relative;
+}
+
+.passwordToggle {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.passwordStrength {
+    margin-top: 0.5rem;
+}
+
+.strengthBars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.strengthBar {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: #e5e7eb;
+    transition: 0.3s;
+}
+
+.strengthBar.active {
+    /* اللون يتم تحديده عبر الـ Inline Style في JS */
+}
+
+.strengthLabel {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+
+/* قسم الصورة الرمزية */
+
+.avatarCard {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    text-align: center;
+    border: 1px dashed #d1d5db;
+}
+
+.avatarContainer {
+    width: 150px;
+    height: 150px;
+    margin: 1rem auto;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e5e7eb;
+    position: relative;
+}
+
+.avatarPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderIcon {
+    width: 100%;
+    height: 100%;
+    color: #9ca3af;
+}
+
+.fileInput {
+    display: none;
+}
+
+.uploadButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+
+/* الأزرار */
+
+.actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.submitButton {
+    background: #3b82f6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

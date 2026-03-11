@@ -1,0 +1,1127 @@
+/* ==========================================================================
+   SystemHealth.module.css
+   ملف تصميم مكون حالة النظام - نسخة احترافية كاملة
+   الإصدار: 1.0.0 | آخر تحديث: 2026
+   ========================================================================== */
+
+
+/* ===== المتغيرات الخاصة بالمكون ===== */
+
+.systemHealth {
+    --card-bg: #1e293b;
+    --card-hover: #2d3a4f;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-hover: rgba(37, 99, 235, 0.2);
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+    --transition-speed: 0.3s;
+}
+
+
+/* ===== الحاوية الرئيسية ===== */
+
+.container {
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* تأثير الخلفية المتحركة */
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px var(--shadow-hover);
+    border-color: var(--info-color);
+}
+
+
+/* ===== رأس القسم ===== */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.title::before {
+    content: '📊';
+    font-size: 1.8rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--info-color), #8b5cf6);
+    border-radius: 2px;
+    animation: expandWidth 1s ease forwards;
+}
+
+@keyframes expandWidth {
+    from {
+        width: 0;
+    }
+    to {
+        width: 60px;
+    }
+}
+
+
+/* ===== وقت آخر تحديث ===== */
+
+.lastUpdated {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0.4rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all var(--transition-speed);
+}
+
+.lastUpdated:hover {
+    background: var(--card-hover);
+    border-color: var(--info-color);
+    transform: translateY(-2px);
+}
+
+.lastUpdated::before {
+    content: '🕐';
+    font-size: 1rem;
+}
+
+
+/* ===== أزرار التحكم ===== */
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+/* زر التحديث */
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, var(--info-color), #8b5cf6);
+    border: none;
+    border-radius: 2rem;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.refreshButton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.refreshButton:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.refreshButton:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+}
+
+.refreshButton:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* دوران أيقونة التحديث */
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* تحديث تلقائي */
+
+.autoRefreshLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.4rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2rem;
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+}
+
+.autoRefreshLabel:hover {
+    background: var(--card-hover);
+    border-color: var(--info-color);
+    transform: translateY(-2px);
+}
+
+.autoRefreshCheckbox {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+    accent-color: var(--info-color);
+    border-radius: 0.25rem;
+    transition: all var(--transition-speed);
+}
+
+.autoRefreshCheckbox:hover {
+    transform: scale(1.1);
+}
+
+
+/* ===== شبكة الخدمات ===== */
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.serviceCard {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+    position: relative;
+    overflow: hidden;
+    animation: scaleIn 0.5s ease forwards;
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.serviceCard:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.serviceCard:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.serviceCard:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.serviceCard:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes scaleIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.serviceCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--info-color), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.serviceCard:hover::before {
+    transform: translateX(0);
+}
+
+.serviceCard:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: var(--info-color);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    background: var(--card-hover);
+}
+
+.serviceHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.serviceIcon {
+    font-size: 1.5rem;
+    color: var(--info-color);
+    transition: all var(--transition-speed);
+}
+
+.serviceCard:hover .serviceIcon {
+    transform: rotate(10deg) scale(1.1);
+}
+
+.serviceHeader h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.serviceStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* أيقونات الحالة */
+
+.statusIconHealthy {
+    color: var(--success-color);
+    font-size: 1.3rem;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px var(--success-color));
+}
+
+.statusIconWarning {
+    color: var(--warning-color);
+    font-size: 1.3rem;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px var(--warning-color));
+}
+
+.statusIconDanger {
+    color: var(--danger-color);
+    font-size: 1.3rem;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px var(--danger-color));
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+
+/* نص الحالة */
+
+.serviceStatusText {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+    border-radius: 2rem;
+    transition: all var(--transition-speed);
+}
+
+.serviceStatusText.healthy {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.serviceStatusText.degraded {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.serviceStatusText.down {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+
+/* ===== قسم المقاييس ===== */
+
+.metricsSection {
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.metricsSection h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.metricsSection h3::before {
+    content: '📈';
+    font-size: 1.3rem;
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metricCard {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+    animation: slideInRight 0.5s ease forwards;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.metricCard:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.metricCard:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.metricCard:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.metricCard:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.metricCard:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.metricCard:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.metricCard:hover {
+    transform: translateY(-3px);
+    border-color: var(--info-color);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.1);
+    background: var(--card-hover);
+}
+
+.metricHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.metricIcon {
+    color: var(--info-color);
+    font-size: 1.1rem;
+    transition: all var(--transition-speed);
+}
+
+.metricCard:hover .metricIcon {
+    transform: rotate(5deg) scale(1.1);
+}
+
+.metricLabel {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.metricValue {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+    transition: all var(--transition-speed);
+}
+
+.metricCard:hover .metricValue {
+    color: var(--info-color);
+    transform: scale(1.02);
+}
+
+
+/* ===== شريط التقدم ===== */
+
+.progressBar {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progressFill {
+    height: 100%;
+    transition: width 1s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progressFill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.progressSuccess {
+    background: linear-gradient(90deg, var(--success-color), #34d399);
+}
+
+.progressWarning {
+    background: linear-gradient(90deg, var(--warning-color), #fbbf24);
+}
+
+.progressDanger {
+    background: linear-gradient(90deg, var(--danger-color), #f87171);
+}
+
+
+/* ===== قسم التنبيهات ===== */
+
+.alertsSection {
+    position: relative;
+    z-index: 2;
+}
+
+.alertsSection h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alertsSection h3::before {
+    content: '🔔';
+    font-size: 1.3rem;
+    animation: bellShake 2s infinite;
+}
+
+@keyframes bellShake {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+    10% {
+        transform: rotate(15deg);
+    }
+    20% {
+        transform: rotate(-15deg);
+    }
+    30% {
+        transform: rotate(10deg);
+    }
+    40% {
+        transform: rotate(-10deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
+    60% {
+        transform: rotate(-5deg);
+    }
+    70% {
+        transform: rotate(0);
+    }
+}
+
+.alertsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.alertItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    animation: slideInLeft 0.3s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all var(--transition-speed);
+}
+
+.alertItem:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.alertItem:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.alertItem:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alertItem:hover {
+    background: var(--card-hover);
+    border-color: var(--info-color);
+    transform: translateX(-3px);
+}
+
+
+/* أيقونات التنبيهات */
+
+.alertIconSuccess {
+    color: var(--success-color);
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px var(--success-color));
+}
+
+.alertIconWarning {
+    color: var(--warning-color);
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 5px var(--warning-color));
+}
+
+.alertIconDanger {
+    color: var(--danger-color);
+    font-size: 1.2rem;
+    animation: pulse 1s infinite;
+    filter: drop-shadow(0 0 5px var(--danger-color));
+}
+
+.alertItem span {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.alertItem:hover span {
+    color: var(--text-primary);
+}
+
+
+/* ===== حالات التحميل ===== */
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    border: 1px solid var(--border-color);
+    gap: 1.5rem;
+}
+
+.loadingSpinner {
+    width: 4rem;
+    height: 4rem;
+    border: 4px solid rgba(59, 130, 246, 0.1);
+    border-top-color: var(--info-color);
+    border-right-color: var(--info-color);
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.loading p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+}
+
+
+/* ===== حالات الخطأ ===== */
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    border: 1px solid var(--danger-color);
+    text-align: center;
+    gap: 1rem;
+}
+
+.error svg {
+    color: var(--danger-color);
+    font-size: 2.5rem;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.error p {
+    color: var(--danger-color);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.retryButton {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    border: none;
+    border-radius: 2rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.retryButton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.retryButton:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.retryButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+}
+
+
+/* ===== تحسينات للشاشات المتوسطة ===== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    .title {
+        font-size: 1.3rem;
+    }
+    .title::before {
+        font-size: 1.5rem;
+    }
+    .lastUpdated {
+        font-size: 0.8rem;
+    }
+    .headerActions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .refreshButton {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    .autoRefreshLabel {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    .servicesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .metricsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .metricValue {
+        font-size: 1.5rem;
+    }
+}
+
+
+/* ===== تحسينات للشاشات الصغيرة ===== */
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .headerTitle {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .title {
+        font-size: 1.1rem;
+    }
+    .title::before {
+        font-size: 1.2rem;
+    }
+    .lastUpdated {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+    }
+    .headerActions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .refreshButton,
+    .autoRefreshLabel {
+        width: 100%;
+        justify-content: center;
+    }
+    .servicesGrid {
+        grid-template-columns: 1fr;
+    }
+    .metricsGrid {
+        grid-template-columns: 1fr;
+    }
+    .serviceCard,
+    .metricCard {
+        padding: 1rem;
+    }
+    .serviceIcon {
+        font-size: 1.3rem;
+    }
+    .serviceHeader h3 {
+        font-size: 0.95rem;
+    }
+    .serviceStatusText {
+        font-size: 0.85rem;
+        padding: 0.2rem 0.8rem;
+    }
+    .metricValue {
+        font-size: 1.3rem;
+    }
+    .alertItem {
+        padding: 0.6rem 0.8rem;
+    }
+    .alertItem span {
+        font-size: 0.85rem;
+    }
+    .loadingSpinner {
+        width: 3rem;
+        height: 3rem;
+    }
+    .loading p {
+        font-size: 0.9rem;
+    }
+    .error svg {
+        font-size: 2rem;
+    }
+    .error p {
+        font-size: 0.9rem;
+    }
+    .retryButton {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+
+/* ===== دعم الوضع الداكن ===== */
+
+@media (prefers-color-scheme: light) {
+    .systemHealth {
+        --card-bg: #ffffff;
+        --card-hover: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+    .container {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    .serviceCard,
+    .metricCard,
+    .alertItem {
+        background: #f8fafc;
+    }
+    .serviceCard:hover,
+    .metricCard:hover,
+    .alertItem:hover {
+        background: #f1f5f9;
+    }
+    .lastUpdated,
+    .autoRefreshLabel {
+        background: #f1f5f9;
+    }
+    .progressBar {
+        background: #e2e8f0;
+    }
+    .loading {
+        background: #ffffff;
+    }
+    .error {
+        background: #ffffff;
+    }
+    .refreshButton {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    .retryButton {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+}
+
+
+/* ===== تأثيرات إضافية ===== */
+
+
+/* تأثير التوهج */
+
+@keyframes glow {
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+    }
+}
+
+
+/* تأثير النبض السريع */
+
+@keyframes fastPulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+
+/* تأثير الاهتزاز */
+
+@keyframes vibrate {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-3px);
+    }
+    75% {
+        transform: translateX(3px);
+    }
+}
+
+
+/* تأثيرات خاصة للقيم الحرجة */
+
+.criticalValue {
+    color: var(--danger-color);
+    animation: fastPulse 1s infinite;
+    font-weight: 800;
+}
+
+.warningValue {
+    color: var(--warning-color);
+    animation: pulse 1.5s infinite;
+}
+
+
+/* شارات الحالة */
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.statusBadgeHealthy {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.statusBadgeWarning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.statusBadgeDanger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}

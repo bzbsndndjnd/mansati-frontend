@@ -1,0 +1,337 @@
+/* Container & Layout */
+
+.container {
+    padding: 2rem;
+    background-color: #0d1117;
+    min-height: 100vh;
+    color: #c9d1d9;
+    direction: rtl;
+    font-family: '__Cairo_7718e5', 'Cairo', sans-serif;
+}
+
+
+/* Header Section */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 1.5rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 2rem;
+    color: #f0f6fc;
+    margin: 0;
+}
+
+.titleIcon {
+    color: #3b82f6;
+}
+
+.subtitle {
+    color: #8b949e;
+    margin-top: 0.5rem;
+}
+
+
+/* Action Buttons */
+
+.headerActions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.saveButton,
+.resetButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.saveButton {
+    background-color: #238636;
+    color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: #2ea043;
+}
+
+.resetButton {
+    background-color: #21262d;
+    color: #c9d1d9;
+    border-color: #30363d;
+}
+
+.resetButton:hover:not(:disabled) {
+    background-color: #30363d;
+}
+
+.saveButton:disabled,
+.resetButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* Warning & Messages */
+
+.warningBanner {
+    background-color: rgba(187, 128, 9, 0.15);
+    border: 1px solid #bb8009;
+    color: #e3b341;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.successMessage {
+    color: #3fb950;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+
+/* Content Layout */
+
+.content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebarItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.2s;
+}
+
+.sidebarItem:hover {
+    background-color: #161b22;
+    color: #f0f6fc;
+}
+
+.active {
+    background-color: #1f2937 !important;
+    color: #3b82f6 !important;
+    font-weight: bold;
+}
+
+
+/* Main Form Area */
+
+.mainContent {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #30363d;
+}
+
+.fieldGroup {
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.fieldLabel {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #f0f6fc;
+}
+
+
+/* Inputs */
+
+.input,
+.select,
+.textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.error {
+    border-color: #f85149 !important;
+}
+
+.fieldError {
+    color: #f85149;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.fieldHelp {
+    color: #8b949e;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+
+/* Custom Toggle Button */
+
+.toggleContainer {
+    display: flex;
+    align-items: center;
+}
+
+.toggleButton {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #30363d;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.toggleButton.active {
+    background: rgba(35, 134, 54, 0.2);
+    border: 1px solid #238636;
+}
+
+.toggleHandle {
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.toggleButton.active .toggleHandle {
+    transform: translateX(-5px);
+    /* عكس الاتجاه للـ RTL */
+    background: #3fb950;
+}
+
+.toggleLabel {
+    font-size: 0.85rem;
+    color: #c9d1d9;
+}
+
+
+/* Color Picker */
+
+.colorPicker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.colorInput {
+    width: 50px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+
+/* Loading Spinner */
+
+.loadingContainer {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    .sidebarItem {
+        white-space: nowrap;
+    }
+}

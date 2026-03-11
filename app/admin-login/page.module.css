@@ -1,0 +1,755 @@
+/* ==========================================================================
+   page.module.css
+   ملف تصميم صفحة دخول الأدمن - نسخة احترافية كاملة
+   الإصدار: 1.0.0 | آخر تحديث: 2026
+   ========================================================================== */
+
+
+/* ===== المتغيرات العامة ===== */
+
+:root {
+    --admin-primary: #2563eb;
+    --admin-primary-dark: #1d4ed8;
+    --admin-primary-light: #60a5fa;
+    --admin-secondary: #7c3aed;
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-danger: #ef4444;
+    --admin-info: #3b82f6;
+    --admin-bg-dark: #0f172a;
+    --admin-bg-card: #1e293b;
+    --admin-bg-input: #334155;
+    --admin-bg-hover: #2d3a4f;
+    --admin-text-primary: #f8fafc;
+    --admin-text-secondary: #cbd5e1;
+    --admin-text-muted: #94a3b8;
+    --admin-text-dark: #1e293b;
+    --admin-border: #334155;
+    --admin-border-light: #475569;
+    --admin-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --admin-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --admin-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+    --admin-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    --admin-shadow-glow: 0 0 20px rgba(37, 99, 235, 0.5);
+    --admin-radius-sm: 0.375rem;
+    --admin-radius-md: 0.5rem;
+    --admin-radius-lg: 0.75rem;
+    --admin-radius-xl: 1rem;
+    --admin-radius-2xl: 1.5rem;
+    --admin-radius-3xl: 2rem;
+    --admin-space-xs: 0.5rem;
+    --admin-space-sm: 1rem;
+    --admin-space-md: 1.5rem;
+    --admin-space-lg: 2rem;
+    --admin-space-xl: 3rem;
+    --admin-space-2xl: 4rem;
+    --admin-font-xs: 0.75rem;
+    --admin-font-sm: 0.875rem;
+    --admin-font-md: 1rem;
+    --admin-font-lg: 1.125rem;
+    --admin-font-xl: 1.25rem;
+    --admin-font-2xl: 1.5rem;
+    --admin-font-3xl: 1.875rem;
+    --admin-font-4xl: 2.25rem;
+    --admin-transition-fast: 150ms ease;
+    --admin-transition-normal: 300ms ease;
+    --admin-transition-slow: 500ms ease;
+}
+
+
+/* ===== الحاوية الرئيسية ===== */
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2d3748 100%);
+    padding: var(--admin-space-md);
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* خلفية متحركة مع نقاط */
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 50%);
+    animation: rotate 40s linear infinite;
+    pointer-events: none;
+}
+
+.container::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+    animation: rotate 50s linear infinite reverse;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ===== صندوق تسجيل الدخول ===== */
+
+.loginBox {
+    width: 100%;
+    max-width: 450px;
+    background: var(--admin-bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-3xl);
+    padding: var(--admin-space-2xl) var(--admin-space-xl);
+    box-shadow: var(--admin-shadow-2xl);
+    position: relative;
+    z-index: 10;
+    animation: fadeInUp 0.6s ease;
+    overflow: hidden;
+}
+
+.loginBox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary));
+}
+
+.loginBox::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ===== الشعار ===== */
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--admin-space-sm);
+    margin-bottom: var(--admin-space-lg);
+}
+
+.logoIcon {
+    font-size: var(--admin-font-4xl);
+    color: var(--admin-primary);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.logoText {
+    font-size: var(--admin-font-2xl);
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    position: relative;
+}
+
+.logoText::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    right: 0;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-secondary));
+    border-radius: var(--admin-radius-sm);
+}
+
+
+/* ===== العنوان الرئيسي ===== */
+
+.loginBox h1 {
+    font-size: var(--admin-font-3xl);
+    font-weight: 800;
+    color: var(--admin-text-primary);
+    text-align: center;
+    margin-bottom: var(--admin-space-xs);
+    letter-spacing: -0.02em;
+}
+
+
+/* ===== النص الفرعي ===== */
+
+.subtitle {
+    font-size: var(--admin-font-sm);
+    color: var(--admin-text-muted);
+    text-align: center;
+    margin-bottom: var(--admin-space-xl);
+    padding-bottom: var(--admin-space-md);
+    border-bottom: 1px solid var(--admin-border);
+    position: relative;
+}
+
+.subtitle::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--admin-primary), var(--admin-secondary), transparent);
+}
+
+
+/* ===== رسالة الخطأ ===== */
+
+.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-right-width: 4px;
+    border-right-color: var(--admin-danger);
+    color: #fecaca;
+    padding: var(--admin-space-md);
+    border-radius: var(--admin-radius-lg);
+    margin-bottom: var(--admin-space-lg);
+    font-size: var(--admin-font-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--admin-space-sm);
+    animation: shake 0.5s ease;
+}
+
+.error::before {
+    content: '⚠️';
+    font-size: var(--admin-font-lg);
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+
+/* ===== مجموعة الحقول ===== */
+
+.formGroup {
+    margin-bottom: var(--admin-space-lg);
+}
+
+.formGroup label {
+    display: block;
+    font-size: var(--admin-font-sm);
+    font-weight: 600;
+    color: var(--admin-text-secondary);
+    margin-bottom: var(--admin-space-xs);
+}
+
+
+/* ===== حقول الإدخال ===== */
+
+.formGroup input {
+    width: 100%;
+    padding: var(--admin-space-md) var(--admin-space-lg);
+    background: var(--admin-bg-input);
+    border: 2px solid var(--admin-border);
+    border-radius: var(--admin-radius-xl);
+    color: var(--admin-text-primary);
+    font-size: var(--admin-font-md);
+    transition: all var(--admin-transition-normal);
+    outline: none;
+    direction: ltr;
+}
+
+.formGroup input:hover {
+    border-color: var(--admin-primary-light);
+}
+
+.formGroup input:focus {
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    background: var(--admin-bg-hover);
+}
+
+.formGroup input::placeholder {
+    color: var(--admin-text-muted);
+    opacity: 0.5;
+}
+
+.formGroup input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--admin-bg-hover);
+}
+
+
+/* ===== أيقونات الحقول (يمكن إضافتها عبر JS) ===== */
+
+.inputIcon {
+    position: relative;
+}
+
+.inputIcon input {
+    padding-left: 3rem;
+}
+
+.inputIcon svg {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-text-muted);
+    font-size: 1.2rem;
+}
+
+
+/* ===== زر الإرسال ===== */
+
+.submitButton {
+    width: 100%;
+    padding: var(--admin-space-md);
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    border: none;
+    border-radius: var(--admin-radius-xl);
+    color: white;
+    font-size: var(--admin-font-lg);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--admin-transition-normal);
+    position: relative;
+    overflow: hidden;
+    margin-top: var(--admin-space-sm);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.submitButton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.submitButton:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #64748b, #475569);
+}
+
+
+/* ===== الملاحظة ===== */
+
+.note {
+    margin-top: var(--admin-space-xl);
+    padding: var(--admin-space-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--admin-radius-lg);
+    border: 1px solid var(--admin-border);
+    font-size: var(--admin-font-xs);
+    color: var(--admin-text-muted);
+    text-align: center;
+    line-height: 1.8;
+    position: relative;
+    overflow: hidden;
+}
+
+.note::before {
+    content: '🔐';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.note p {
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.note p:first-child {
+    color: var(--admin-text-secondary);
+    font-weight: 600;
+    margin-bottom: var(--admin-space-xs);
+}
+
+
+/* ===== حالة التحميل ===== */
+
+.loadingContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--admin-text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.loadingContainer::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 50%);
+    animation: rotate 30s linear infinite;
+}
+
+.loadingSpinner {
+    width: 5rem;
+    height: 5rem;
+    border: 4px solid rgba(37, 99, 235, 0.1);
+    border-top-color: var(--admin-primary);
+    border-right-color: var(--admin-secondary);
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+    margin-bottom: var(--admin-space-lg);
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingContainer p {
+    font-size: var(--admin-font-lg);
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, var(--admin-text-primary), var(--admin-primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pulse 2s infinite;
+}
+
+
+/* ===== أيقونة القفل ===== */
+
+.lockIcon {
+    position: absolute;
+    top: var(--admin-space-lg);
+    right: var(--admin-space-lg);
+    color: var(--admin-text-muted);
+    font-size: 1.5rem;
+    opacity: 0.5;
+    animation: float 3s infinite;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+
+/* ===== العودة إلى الرئيسية ===== */
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--admin-space-xs);
+    color: var(--admin-text-muted);
+    font-size: var(--admin-font-sm);
+    text-decoration: none;
+    margin-top: var(--admin-space-md);
+    transition: all var(--admin-transition-fast);
+    padding: var(--admin-space-xs) var(--admin-space-sm);
+    border-radius: var(--admin-radius-xl);
+}
+
+.backLink:hover {
+    color: var(--admin-primary);
+    background: rgba(37, 99, 235, 0.1);
+    transform: translateX(-3px);
+}
+
+.backLink svg {
+    font-size: 1rem;
+}
+
+
+/* ===== تحسينات للشاشات المتوسطة ===== */
+
+@media (max-width: 768px) {
+    .loginBox {
+        max-width: 400px;
+        padding: var(--admin-space-xl) var(--admin-space-lg);
+    }
+    .loginBox h1 {
+        font-size: var(--admin-font-2xl);
+    }
+    .logoIcon {
+        font-size: var(--admin-font-3xl);
+    }
+    .logoText {
+        font-size: var(--admin-font-xl);
+    }
+    .formGroup input {
+        padding: var(--admin-space-sm) var(--admin-space-md);
+    }
+    .submitButton {
+        padding: var(--admin-space-sm);
+        font-size: var(--admin-font-md);
+    }
+    .loadingSpinner {
+        width: 4rem;
+        height: 4rem;
+    }
+}
+
+
+/* ===== تحسينات للشاشات الصغيرة ===== */
+
+@media (max-width: 480px) {
+    .container {
+        padding: var(--admin-space-sm);
+    }
+    .loginBox {
+        max-width: 100%;
+        padding: var(--admin-space-lg) var(--admin-space-md);
+        border-radius: var(--admin-radius-2xl);
+    }
+    .loginBox h1 {
+        font-size: var(--admin-font-xl);
+    }
+    .subtitle {
+        font-size: var(--admin-font-xs);
+        margin-bottom: var(--admin-space-lg);
+    }
+    .logoIcon {
+        font-size: var(--admin-font-2xl);
+    }
+    .logoText {
+        font-size: var(--admin-font-lg);
+    }
+    .formGroup label {
+        font-size: var(--admin-font-xs);
+    }
+    .formGroup input {
+        padding: var(--admin-space-sm);
+        font-size: var(--admin-font-sm);
+    }
+    .submitButton {
+        padding: var(--admin-space-sm);
+        font-size: var(--admin-font-sm);
+    }
+    .note {
+        padding: var(--admin-space-sm);
+        font-size: var(--admin-font-xs);
+    }
+    .error {
+        padding: var(--admin-space-sm);
+        font-size: var(--admin-font-xs);
+    }
+    .loadingSpinner {
+        width: 3rem;
+        height: 3rem;
+    }
+    .loadingContainer p {
+        font-size: var(--admin-font-md);
+    }
+    .lockIcon {
+        top: var(--admin-space-sm);
+        right: var(--admin-space-sm);
+        font-size: 1.2rem;
+    }
+}
+
+
+/* ===== دعم الوضع الفاتح ===== */
+
+@media (prefers-color-scheme: light) {
+     :root {
+        --admin-bg-dark: #f8fafc;
+        --admin-bg-card: #ffffff;
+        --admin-bg-input: #f1f5f9;
+        --admin-bg-hover: #e2e8f0;
+        --admin-text-primary: #0f172a;
+        --admin-text-secondary: #334155;
+        --admin-text-muted: #64748b;
+        --admin-border: #e2e8f0;
+        --admin-border-light: #cbd5e1;
+        --admin-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    .container {
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    }
+    .loginBox {
+        background: rgba(255, 255, 255, 0.95);
+    }
+    .error {
+        background: rgba(239, 68, 68, 0.05);
+        color: var(--admin-danger);
+    }
+    .note {
+        background: rgba(0, 0, 0, 0.02);
+    }
+    .loadingContainer {
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    }
+    .loadingContainer p {
+        background: linear-gradient(135deg, #0f172a, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+
+/* ===== تأثيرات إضافية ===== */
+
+
+/* تأثير التوهج عند التمرير */
+
+.loginBox:focus-within {
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+}
+
+
+/* تأثير النقر */
+
+.submitButton:active {
+    transform: scale(0.98);
+}
+
+
+/* تأثير الكتابة */
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+
+/* أيقونة العين لإظهار/إخفاء كلمة المرور */
+
+.passwordToggle {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all var(--admin-transition-fast);
+}
+
+.passwordToggle:hover {
+    color: var(--admin-primary);
+}
+
+
+/* ===== خط فاصل مزخرف ===== */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: var(--admin-space-sm);
+    margin: var(--admin-space-lg) 0;
+    color: var(--admin-text-muted);
+    font-size: var(--admin-font-xs);
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--admin-border), transparent);
+}

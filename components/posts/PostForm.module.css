@@ -1,0 +1,376 @@
+/* ====== Post Form Container ====== */
+
+.postForm {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.postForm:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ====== Form Title ====== */
+
+.formTitle {
+    margin: 0 0 20px 0;
+    color: #1a1a1a;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: right;
+    border-bottom: 2px solid #e4e6eb;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.formTitle::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+
+/* ====== Textarea Input ====== */
+
+.postInput {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e4e6eb;
+    border-radius: 12px;
+    font-size: 15px;
+    resize: vertical;
+    margin-bottom: 20px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.postInput:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.postInput::placeholder {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.postInput:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+/* ====== Form Actions Container ====== */
+
+.formActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+
+/* ====== Media Label ====== */
+
+.mediaLabel {
+    flex: 1;
+    min-width: 180px;
+    cursor: pointer;
+}
+
+.mediaInput {
+    display: none;
+}
+
+.mediaButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #f0f2f5;
+    color: #1a1a1a;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.mediaButton:hover {
+    background: #e4e6eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mediaButton:active {
+    transform: translateY(0);
+}
+
+
+/* ====== Submit Button ====== */
+
+.submitButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 32px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.submitButton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.submitButton:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.submitButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submitButton:active {
+    transform: translateY(0);
+}
+
+.submitButton:disabled {
+    background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.submitButton:disabled::before {
+    display: none;
+}
+
+
+/* ====== Media Preview ====== */
+
+.mediaPreview {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px dashed #cbd5e0;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mediaPreview span {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mediaPreview span::before {
+    content: '📎';
+    font-size: 16px;
+}
+
+.removeMedia {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.removeMedia:hover {
+    background: #fee2e2;
+    transform: scale(1.1);
+}
+
+.removeMedia:active {
+    transform: scale(0.95);
+}
+
+
+/* ====== Loading State ====== */
+
+.submitButton.loading {
+    position: relative;
+    color: transparent;
+}
+
+.submitButton.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+
+/* ====== Responsive Design ====== */
+
+@media (max-width: 768px) {
+    .postForm {
+        padding: 16px;
+        border-radius: 12px;
+    }
+    .formActions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .mediaLabel {
+        width: 100%;
+    }
+    .submitButton {
+        width: 100%;
+    }
+    .formTitle {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .postForm {
+        padding: 12px;
+    }
+    .postInput {
+        padding: 12px;
+        font-size: 14px;
+    }
+    .mediaButton {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    .submitButton {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+
+/* ====== RTL Support ====== */
+
+[dir="rtl"] .formTitle::after {
+    right: 0;
+    left: auto;
+}
+
+[dir="rtl"] .mediaPreview span::before {
+    margin-left: 8px;
+    margin-right: 0;
+}
+
+
+/* ====== Dark Mode Support ====== */
+
+@media (prefers-color-scheme: dark) {
+    .postForm {
+        background: #1f2937;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .formTitle {
+        color: #f3f4f6;
+        border-bottom-color: #374151;
+    }
+    .postInput {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f3f4f6;
+    }
+    .postInput:focus {
+        background: #1f2937;
+        border-color: #667eea;
+    }
+    .postInput::placeholder {
+        color: #9ca3af;
+    }
+    .mediaButton {
+        background: #374151;
+        color: #f3f4f6;
+    }
+    .mediaButton:hover {
+        background: #4b5563;
+    }
+    .mediaPreview {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    .mediaPreview span {
+        color: #f3f4f6;
+    }
+    .removeMedia {
+        color: #f87171;
+    }
+    .removeMedia:hover {
+        background: #7f1d1d;
+    }
+}

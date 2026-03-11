@@ -1,0 +1,411 @@
+/* ================================
+   🎨 Posts Page Styles
+   ================================ */
+
+
+/* ألوان أساسية */
+
+:root {
+    --primary-color: #1e3a8a;
+    /* أزرق رسمي */
+    --secondary-color: #2563eb;
+    /* أزرق فاتح */
+    --accent-color: #f59e0b;
+    /* برتقالي للتأكيد */
+    --danger-color: #dc2626;
+    /* أحمر للتحذير */
+    --success-color: #16a34a;
+    /* أخضر للنجاح */
+    --background-color: #f9fafb;
+    /* خلفية فاتحة */
+    --text-color: #111827;
+    /* نص داكن */
+    --muted-color: #6b7280;
+    /* نص ثانوي */
+    --border-color: #e5e7eb;
+    /* حدود فاتحة */
+}
+
+
+/* الصفحة الرئيسية */
+
+.postsPage {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+}
+
+
+/* العنوان */
+
+.postsPage h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+
+/* حالة التحميل */
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    padding: 2rem;
+}
+
+
+/* حالة الخطأ */
+
+.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    color: var(--danger-color);
+    padding: 2rem;
+    background: #fee2e2;
+    border: 1px solid var(--danger-color);
+    border-radius: 8px;
+}
+
+
+/* قائمة البوستات */
+
+.postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+/* بطاقة البوست */
+
+.postCard {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.postCard:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+
+/* عنوان البوست */
+
+.postTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+
+/* محتوى البوست */
+
+.postContent {
+    font-size: 1rem;
+    color: var(--muted-color);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+
+/* أزرار التفاعل */
+
+.postActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.postActions button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.postActions button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* ألوان الأزرار */
+
+.reactBtn {
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.reactBtn:hover {
+    background: #1d4ed8;
+}
+
+.commentBtn {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.commentBtn:hover {
+    background: #d97706;
+}
+
+.shareBtn {
+    background: var(--success-color);
+    color: #fff;
+}
+
+.shareBtn:hover {
+    background: #15803d;
+}
+
+.deleteBtn {
+    background: var(--danger-color);
+    color: #fff;
+}
+
+.deleteBtn:hover {
+    background: #b91c1c;
+}
+
+
+/* app/posts/posts.module.css */
+
+
+/* تحديث الأنماط لتتناسب مع الحالات الجديدة */
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    color: #6b7280;
+}
+
+.authRequired {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.authIcon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #3b82f6;
+}
+
+.authRequired h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.authMessage {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.authButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.loginBtn,
+.registerBtn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.loginBtn {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+}
+
+.loginBtn:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(59, 130, 246, 0.3);
+}
+
+.registerBtn {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.registerBtn:hover {
+    background: #d1d5db;
+    transform: translateY(-2px);
+}
+
+.authNote {
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+.error {
+    text-align: center;
+    padding: 3rem 1rem;
+    max-width: 400px;
+    margin: 2rem auto;
+    background: #fef2f2;
+    border-radius: 16px;
+    border: 1px solid #fee2e2;
+}
+
+.errorIcon {
+    font-size: 2.5rem;
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.error h3 {
+    font-size: 1.25rem;
+    color: #b91c1c;
+    margin-bottom: 0.5rem;
+}
+
+.error p {
+    color: #7f1d1d;
+    margin-bottom: 1.5rem;
+}
+
+.errorActions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.retryBtn,
+.homeBtn {
+    padding: 0.5rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.retryBtn {
+    background: #ef4444;
+    color: white;
+}
+
+.retryBtn:hover {
+    background: #dc2626;
+}
+
+.homeBtn {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.homeBtn:hover {
+    background: #d1d5db;
+}
+
+.postsPage {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.postsPage h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+/* app/posts/posts.module.css */
+
+
+/* إضافة الأنماط الجديدة */
+
+.infoBanner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    color: #0369a1;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+}
+
+.infoBanner svg {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+}
+
+.loginLink,
+.registerLink {
+    background: none;
+    border: none;
+    color: #0284c7;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 0.95rem;
+}
+
+.loginLink:hover,
+.registerLink:hover {
+    color: #0369a1;
+}
+
+
+/* باقي الأنماط كما هي – أبقها */

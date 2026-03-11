@@ -1,0 +1,416 @@
+/* ============================================================================
+   Variables - لوحة الألوان والهوية البصرية
+   ============================================================================ */
+
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    /* Status Colors */
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    /* Role Colors */
+    --role-admin: #7c3aed;
+    --role-mod: #0891b2;
+    --role-user: #64748b;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container {
+    padding: 2rem;
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    direction: rtl;
+}
+
+
+/* ============================================================================
+   Header Section
+   ============================================================================ */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.titleIcon {
+    color: var(--primary);
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+
+/* Buttons Styling */
+
+.createButton,
+.refreshButton,
+.filterButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.createButton {
+    background: var(--primary);
+    color: white;
+}
+
+.createButton:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.refreshButton {
+    background: white;
+    border-color: var(--border-color);
+    color: var(--text-main);
+    padding: 0.625rem;
+}
+
+.refreshButton:hover {
+    background: #f1f5f9;
+}
+
+
+/* ============================================================================
+   Search & Filter Section
+   ============================================================================ */
+
+.searchSection {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.searchBox {
+    position: relative;
+    flex: 1;
+}
+
+.searchIcon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 2.75rem 0.75rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.filtersPanel {
+    display: flex;
+    gap: 2rem;
+    background: white;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ============================================================================
+   Table Design
+   ============================================================================ */
+
+.tableContainer {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: right;
+}
+
+.table th {
+    background: #f8fafc;
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sortableHeader {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortableHeader:hover {
+    color: var(--primary);
+}
+
+.tableRow {
+    transition: var(--transition);
+}
+
+.tableRow:hover {
+    background-color: #f1f5f9;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    vertical-align: middle;
+}
+
+
+/* User Info Cell */
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    overflow: hidden;
+}
+
+.userAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.userName {
+    font-weight: 600;
+}
+
+
+/* Badges */
+
+.badge,
+.statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin {
+    background: #ede9fe;
+    color: var(--role-admin);
+}
+
+.moderator {
+    background: #ecfeff;
+    color: var(--role-mod);
+}
+
+.user {
+    background: #f1f5f9;
+    color: var(--role-user);
+}
+
+.active {
+    background: #dcfce7;
+    color: var(--success);
+}
+
+.inactive {
+    background: #fee2e2;
+    color: var(--danger);
+}
+
+
+/* Actions */
+
+.actionsCell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actionButton {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.viewAction:hover {
+    color: var(--info);
+    border-color: var(--info);
+}
+
+.editAction:hover {
+    color: var(--warning);
+    border-color: var(--warning);
+}
+
+.deleteAction:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.banAction:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.activateAction:hover {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+
+/* ============================================================================
+   Pagination & Overlays
+   ============================================================================ */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pageButton {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.activePage {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.confirmOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.confirmDialog {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-md);
+}
+
+
+/* Animations */
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Mobile Responsiveness */
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .searchSection {
+        flex-direction: column;
+    }
+    .table {
+        display: block;
+        overflow-x: auto;
+    }
+}

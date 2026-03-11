@@ -1,0 +1,236 @@
+/* UserCard.module.css - الإصدار 3.0.0 */
+
+:root {
+    --card-bg: #ffffff;
+    --text-main: #1a1a1b;
+    --text-muted: #65676b;
+    --primary-color: #0084ff;
+    --primary-hover: #0073e6;
+    --danger-color: #e41e3f;
+    --border-radius-lg: 16px;
+    --border-radius-md: 12px;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.userCard {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+}
+
+.userCard:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    transform: translateY(-4px);
+}
+
+
+/* --- الغلاف (Cover Photo) --- */
+
+.coverPhoto {
+    height: 100px;
+    width: 100%;
+    background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+    position: relative;
+}
+
+.coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.coverPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--primary-color), #8e2de2);
+    opacity: 0.7;
+}
+
+
+/* --- الصورة الرمزية (Avatar) --- */
+
+.avatarContainer {
+    position: relative;
+    margin-top: -45px;
+    margin-right: 20px;
+    /* ليتناسب مع RTL */
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 4px solid var(--card-bg);
+    background: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    z-index: 2;
+    overflow: hidden;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--text-muted);
+    background: #f0f2f5;
+}
+
+.avatarError {
+    background: #ffebee;
+    color: var(--danger-color);
+}
+
+
+/* --- المحتوى (Content) --- */
+
+.content {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.userName {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+}
+
+.userEmail,
+.joinDate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.icon {
+    width: 14px;
+    opacity: 0.8;
+}
+
+
+/* --- الإحصائيات (Stats) --- */
+
+.userStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 15px 0;
+    border-top: 1px solid #f0f2f5;
+    border-bottom: 1px solid #f0f2f5;
+    margin: 5px 0;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.statValue {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.statLabel {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+
+/* --- زر المتابعة (Follow Button) --- */
+
+.followButton {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius-md);
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all var(--transition-fast);
+}
+
+.followButton:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    transform: scale(1.02);
+}
+
+.followButton:active {
+    transform: scale(0.98);
+}
+
+.followButton.following {
+    background-color: #f0f2f5;
+    color: var(--text-main);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.followButton.following:hover:not(:disabled) {
+    background-color: #ffebee;
+    color: var(--danger-color);
+    border-color: #ffcdd2;
+}
+
+.followButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+
+/* --- شارة المستخدم الحالي --- */
+
+.currentUserBadge {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: #f8f9fa;
+    padding: 6px;
+    border-radius: 8px;
+    font-style: italic;
+}
+
+
+/* --- التجاوب (Responsiveness) --- */
+
+@media (max-width: 480px) {
+    .userCard {
+        max-width: 100%;
+    }
+}

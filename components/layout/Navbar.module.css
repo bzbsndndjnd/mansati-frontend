@@ -1,0 +1,312 @@
+/* الأساسيات */
+
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    /* خط خفيف تحت النافبار */
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.navbarContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* الشعار */
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.logo:hover {
+    color: #2563eb;
+    /* أزرق عند المرور */
+}
+
+
+/* روابط التنقل */
+
+.navLinks {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navLinks a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.navLinks a:hover {
+    color: #2563eb;
+}
+
+
+/* أزرار الدخول والخروج */
+
+.authActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+
+/* أزرار عامة */
+
+.btn-outline {
+    padding: 0.5rem 1rem;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #2563eb;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-danger {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background-color: #dc2626;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+
+/* استجابة للشاشات الصغيرة */
+
+@media (max-width: 768px) {
+    .navbarContainer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .navLinks {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .authActions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+
+/* components/layout/Navbar.module.css */
+
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbarContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.logo:hover {
+    opacity: 0.9;
+}
+
+.navLinks {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.navLinks a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.navLinks a:hover {
+    opacity: 0.9;
+}
+
+.navLinks a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: white;
+    transform: scaleX(0);
+    transition: transform 0.3s;
+}
+
+.navLinks a:hover::after {
+    transform: scaleX(1);
+}
+
+
+/* ✅ رابط الأدمن */
+
+.adminLink {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem !important;
+    border-radius: 2rem;
+    transition: all 0.3s !important;
+}
+
+.adminLink:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.adminLink svg {
+    font-size: 1.1rem;
+}
+
+
+/* أزرار الدخول والخروج */
+
+.authActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.authActions :global(.btn-outline) {
+    padding: 0.5rem 1.5rem;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.authActions :global(.btn-outline:hover) {
+    background: white;
+    color: #667eea;
+}
+
+.authActions :global(.btn-primary) {
+    padding: 0.5rem 1.5rem;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.authActions :global(.btn-primary:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.authActions :global(.btn-danger) {
+    padding: 0.5rem 1.5rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.authActions :global(.btn-danger:hover) {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+
+/* تحسينات للشاشات الصغيرة */
+
+@media (max-width: 768px) {
+    .navbarContainer {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .navLinks {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .authActions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .navLinks {
+        flex-direction: column;
+        align-items: center;
+    }
+    .authActions {
+        flex-direction: column;
+    }
+    .authActions a,
+    .authActions button {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -1,0 +1,227 @@
+/* app/admin/StatsCards.module.css */
+
+
+/* 📊 بطاقات الإحصائيات - تصميم احترافي */
+
+
+/* @version 2.0.0 */
+
+
+/* @lastUpdated 2026 */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #334155);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.cardContent {
+    position: relative;
+    z-index: 1;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.cardTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary, #cbd5e1);
+    margin: 0;
+}
+
+.cardIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .cardIcon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.cardValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary, #f8fafc);
+    margin-bottom: 0.5rem;
+}
+
+.cardTrend {
+    font-size: 0.875rem;
+    color: var(--text-muted, #94a3b8);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color, #334155);
+}
+
+.trendUp {
+    color: #10b981;
+}
+
+.trendDown {
+    color: #ef4444;
+}
+
+
+/* حالة التحميل */
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--text-muted, #94a3b8);
+    gap: 0.75rem;
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+}
+
+.loading::after {
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--border-color, #334155);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* حالة عدم وجود بيانات */
+
+.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    color: var(--text-muted, #94a3b8);
+}
+
+
+/* ألوان البطاقات المختلفة */
+
+.card[data-color="blue"] {
+    --card-color: #3b82f6;
+}
+
+.card[data-color="green"] {
+    --card-color: #10b981;
+}
+
+.card[data-color="yellow"] {
+    --card-color: #f59e0b;
+}
+
+.card[data-color="red"] {
+    --card-color: #ef4444;
+}
+
+
+/* دعم الوضع الفاتح */
+
+@media (prefers-color-scheme: light) {
+    .card {
+        --card-bg: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+    }
+}
+
+
+/* تصميم متجاوب */
+
+@media (max-width: 768px) {
+    .grid {
+        gap: 1rem;
+    }
+    .card {
+        padding: 1.25rem;
+    }
+    .cardValue {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        padding: 1rem;
+    }
+    .cardValue {
+        font-size: 1.5rem;
+    }
+}

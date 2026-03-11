@@ -1,0 +1,96 @@
+:root {
+    --color-primary: #2563eb;
+    --color-primary-hover: #1e40af;
+    --color-success: #16a34a;
+    --color-success-hover: #15803d;
+    --color-bg: #f3f4f6;
+    --color-text: #111827;
+    --color-muted: #6b7280;
+    --radius: 0.5rem;
+    --transition: 0.3s ease-in-out;
+    --font-main: "Cairo", sans-serif;
+}
+
+
+/* الصفحة */
+
+.registerPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--color-bg);
+    font-family: var(--font-main);
+    padding: 1rem;
+}
+
+
+/* الفورم */
+
+.registerForm {
+    background: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius);
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+}
+
+.registerForm h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+}
+
+
+/* الحقول */
+
+.registerForm input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.registerForm input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    outline: none;
+}
+
+
+/* زر التسجيل */
+
+.btnRegister {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: var(--color-success);
+    color: white;
+    transition: background-color var(--transition), transform var(--transition);
+}
+
+.btnRegister:hover {
+    background-color: var(--color-success-hover);
+    transform: translateY(-2px);
+}
+
+
+/* Responsive */
+
+@media (max-width: 480px) {
+    .registerForm {
+        padding: 1.5rem;
+    }
+    .registerForm h2 {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,265 @@
+/* ================================
+   🎨 PostsList Styles
+   ================================ */
+
+:root {
+    --primary-color: #1e3a8a;
+    /* أزرق رسمي */
+    --secondary-color: #2563eb;
+    /* أزرق فاتح */
+    --accent-color: #f59e0b;
+    /* برتقالي للتأكيد */
+    --danger-color: #dc2626;
+    /* أحمر للتحذير */
+    --success-color: #16a34a;
+    /* أخضر للنجاح */
+    --background-color: #f9fafb;
+    /* خلفية فاتحة */
+    --text-color: #111827;
+    /* نص داكن */
+    --muted-color: #6b7280;
+    /* نص ثانوي */
+    --border-color: #e5e7eb;
+    /* حدود فاتحة */
+}
+
+
+/* الحاوية الرئيسية */
+
+.postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+
+/* حالة عدم وجود بوستات */
+
+.noPosts {
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--muted-color);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+
+/* بطاقة البوست */
+
+.postCard {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.postCard:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+
+/* عنوان البوست */
+
+.postTitle {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+
+/* محتوى البوست */
+
+.postContent {
+    font-size: 1rem;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+
+/* أزرار التفاعل */
+
+.postActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.postActions button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.postActions button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* ألوان الأزرار */
+
+.reactBtn {
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.reactBtn:hover {
+    background: #1d4ed8;
+}
+
+.commentBtn {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.commentBtn:hover {
+    background: #d97706;
+}
+
+.shareBtn {
+    background: var(--success-color);
+    color: #fff;
+}
+
+.shareBtn:hover {
+    background: #15803d;
+}
+
+.deleteBtn {
+    background: var(--danger-color);
+    color: #fff;
+}
+
+.deleteBtn:hover {
+    background: #b91c1c;
+}
+
+
+/* components/posts/PostsList.module.css */
+
+
+/* أنماط قائمة المنشورات */
+
+
+/* الحاوية الرئيسية */
+
+.postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+
+/* حالة عدم وجود منشورات */
+
+.noPosts {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+    font-size: 1.1rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    margin: 2rem auto;
+    max-width: 400px;
+}
+
+
+/* تأثير التمييز للمنشور المستهدف */
+
+.highlighted {
+    animation: highlight-pulse 2s ease-out;
+    border-radius: 12px;
+}
+
+@keyframes highlight-pulse {
+    0% {
+        background-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+        transform: scale(1);
+    }
+    30% {
+        background-color: rgba(59, 130, 246, 0.2);
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3);
+        transform: scale(1.02);
+    }
+    70% {
+        background-color: rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        transform: scale(1);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+        transform: scale(1);
+    }
+}
+
+
+/* components/posts/PostsList.module.css */
+
+
+/* أنماط قائمة المنشورات - كما هي */
+
+.postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.noPosts {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+    font-size: 1.1rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    margin: 2rem auto;
+    max-width: 400px;
+}
+
+.highlighted {
+    animation: highlight-pulse 2s ease-out;
+    border-radius: 12px;
+}
+
+@keyframes highlight-pulse {
+    0% {
+        background-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+        transform: scale(1);
+    }
+    30% {
+        background-color: rgba(59, 130, 246, 0.2);
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3);
+        transform: scale(1.02);
+    }
+    70% {
+        background-color: rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        transform: scale(1);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+        transform: scale(1);
+    }
+}

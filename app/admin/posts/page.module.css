@@ -1,0 +1,407 @@
+/* ============================================================================
+   Variables & Theme
+   ============================================================================ */
+
+:root {
+    --primary: #2563eb;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --radius: 16px;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container {
+    padding: 2rem;
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    direction: rtl;
+}
+
+
+/* ============================================================================
+   Header & Actions
+   ============================================================================ */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+    color: var(--text-main);
+}
+
+.titleIcon {
+    color: var(--primary);
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.createButton {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.createButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+}
+
+
+/* ============================================================================
+   Search & Filtering Panel
+   ============================================================================ */
+
+.searchSection {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    flex: 1;
+    position: relative;
+    min-width: 300px;
+}
+
+.searchIcon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.8rem 2.8rem 0.8rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    outline: none;
+    transition: var(--transition);
+}
+
+.searchInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.filterButton,
+.dateButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: #eff6ff;
+}
+
+
+/* Panels */
+
+.filtersPanel,
+.datePickerPanel {
+    display: flex;
+    gap: 1.5rem;
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+
+/* ============================================================================
+   Posts Grid & Cards
+   ============================================================================ */
+
+.postsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.postCard {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.postCard:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+
+/* Image Section */
+
+.postMedia {
+    height: 200px;
+    width: 100%;
+    position: relative;
+    background: #f1f5f9;
+}
+
+.mediaImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mediaCount {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+
+/* Content Section */
+
+.postContent {
+    padding: 1.25rem;
+    flex-grow: 1;
+}
+
+.postText {
+    color: var(--text-main);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+
+/* Author Info */
+
+.postInfo {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+}
+
+.postAuthor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.authorAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.authorAvatarIcon {
+    font-size: 1.75rem;
+    color: var(--text-muted);
+}
+
+.authorName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.postDate {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+
+/* Stats & Actions */
+
+.postStats {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    gap: 1rem;
+    background: #fcfdfe;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.postActions {
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.actionButton {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.viewAction:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.deleteAction:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+    background: #fef2f2;
+}
+
+
+/* Status Badges */
+
+.reportedBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--danger);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ============================================================================
+   Overlays & Pagination (Shared Logic)
+   ============================================================================ */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+    gap: 0.5rem;
+}
+
+.pageButton {
+    padding: 0.6rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+}
+
+.activePage {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.confirmOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.confirmDialog {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 400px;
+    text-align: center;
+}
+
+.confirmYes {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.confirmNo {
+    background: #e2e8f0;
+    color: var(--text-main);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 640px) {
+    .postsGrid {
+        grid-template-columns: 1fr;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
