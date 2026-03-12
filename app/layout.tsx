@@ -1,9 +1,10 @@
 // app/layout.tsx
-// 🏗️ مسؤول: التخطيط الرئيسي للتطبيق
+// 🏗️ مسؤول: التخطيط الرئيسي للتطبيق - نسخة محدثة مع تصدير viewport منفصل
+// @version 1.0.3
+// @lastUpdated 2026
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./../styles/globals.css";
-import { Cairo } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AuthProvider from "@/context/AuthContext";
@@ -11,17 +12,15 @@ import NotificationBell from "@/components/notifications/NotificationBell";
 import SocketInitializer from "@/components/SocketInitializer";
 import { secureLog } from "@/utils/security";
 
-const cairo = Cairo({
-  subsets: ["arabic"],
-  weight: ["400", "600", "700"],
-  display: "swap",
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#667eea",
+};
 
 export const metadata: Metadata = {
   title: "منصتنا الاجتماعية",
   description: "منصة اجتماعية احترافية للتواصل وبناء المجتمع الرقمي",
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#667eea",
 };
 
 export default function RootLayout({
@@ -33,14 +32,10 @@ export default function RootLayout({
   
   return (
     <html lang="ar" dir="rtl">
-      <body className={cairo.className}>
+      <body style={{ fontFamily: 'system-ui, arial, sans-serif' }}>
         <AuthProvider>
-          {/* مكون تهيئة Socket */}
           <SocketInitializer />
-
           <Navbar />
-
-          {/* الشريط العلوي مع الإشعارات */}
           <div className="top-bar">
             <div className="container">
               <div className="top-bar-content">
@@ -49,9 +44,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-
           <main className="main-container">{children}</main>
-          
           <Footer />
         </AuthProvider>
       </body>

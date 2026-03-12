@@ -2,7 +2,7 @@
 
 // app/users/page.tsx
 // 👥 صفحة عرض جميع المستخدمين مع إمكانية المتابعة
-// الإصدار: 3.0.0 | آخر تحديث: 2026
+// الإصدار: 4.0.0 | آخر تحديث: 2026
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -11,30 +11,10 @@ import userService from "@/services/userService";
 import followService from "@/services/followService";
 import { socketService } from "@/services/socketService";
 import UserList from "@/components/users/UserList";
+import { UserWithFollow, searchResultToUserWithFollow, toUserWithFollow } from "@/types/User";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUserPlus, faSync, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import styles from "./page.module.css";
-
-// ============================================================================
-// أنواع البيانات
-// ============================================================================
-
-interface UserWithFollow {
-  _id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  coverPhoto?: string;
-  bio?: string;
-  followersCount: number;
-  followingCount: number;
-  postsCount: number;
-  isFollowing: boolean;
-  isOnline?: boolean;
-  lastLogin?: string;
-  role?: 'user' | 'admin' | 'moderator';
-  createdAt?: string;
-}
 
 // ============================================================================
 // الصفحة الرئيسية للمستخدمين
@@ -103,32 +83,25 @@ export default function UsersPage() {
         
         console.log('📥 [UsersPage] Loading all users...');
         
-        // جلب جميع المستخدمين
         const allUsers = await userService.getAllUsers();
-        console.log(`📥 [UsersPage] Loaded ${allUsers.length} users`);
-        
-        // استبعاد المستخدم الحالي من القائمة
         const otherUsers = allUsers.filter(u => u._id !== currentUser._id);
         
-        // جلب حالة المتابعة دفعة واحدة
         const userIds = otherUsers.map(u => u._id);
         const bulkStatus = await followService.getBulkFollowStatus(userIds);
         
-        // تجهيز البيانات
-        const usersWithFollowStatus = otherUsers.map(user => ({
-          ...user,
-          isFollowing: bulkStatus[user._id] || false,
-          followersCount: user.followersCount || 0,
-          followingCount: user.followingCount || 0,
-          postsCount: user.postsCount || 0,
-          isOnline: onlineUsers.has(user._id)
-        }));
+        // تحويل كل مستخدم إلى UserWithFollow باستخدام دالة التحويل
+        const usersWithFollow: UserWithFollow[] = otherUsers.map(user => 
+          toUserWithFollow(
+            user, 
+            bulkStatus[user._id] || false, 
+            onlineUsers.has(user._id)
+          )
+        );
         
-        setUsers(usersWithFollowStatus);
+        setUsers(usersWithFollow);
         
-        // تحديث قائمة المتابعين
         const followingSet = new Set(
-          usersWithFollowStatus
+          usersWithFollow
             .filter(u => u.isFollowing)
             .map(u => u._id)
         );
@@ -151,12 +124,18 @@ export default function UsersPage() {
 
   useEffect(() => {
     const handleOnlineUsers = (onlineUsersList: { id: string; name: string }[]) => {
-      setOnlineUsers(new Set(onlineUsersList.map(u => u.id)));
+      const onlineSet = new Set(onlineUsersList.map(u => u.id));
+      setOnlineUsers(onlineSet);
       
-      // تحديث حالة الاتصال في قائمة المستخدمين
+      // تحديث حالة الاتصال في القوائم
       setUsers(prev => prev.map(u => ({
         ...u,
-        isOnline: onlineUsersList.some(ou => ou.id === u._id)
+        isOnline: onlineSet.has(u._id)
+      })));
+      
+      setSearchResults(prev => prev.map(u => ({
+        ...u,
+        isOnline: onlineSet.has(u._id)
       })));
     };
 
@@ -185,31 +164,31 @@ export default function UsersPage() {
       const results = await userService.searchUsers(query);
       
       // استبعاد المستخدم الحالي
-      const filtered = results.filter(u => u._id !== currentUser?._id);
+      const filtered = results.filter(r => r._id !== currentUser?._id);
       
-      // التحقق من حالة المتابعة
-      const withFollowStatus = await Promise.all(
-        filtered.map(async (user) => ({
-          ...user,
-          isFollowing: following.has(user._id),
-          followersCount: user.followersCount || 0,
-          followingCount: user.followingCount || 0,
-          postsCount: user.postsCount || 0,
-          isOnline: onlineUsers.has(user._id)
-        }))
-      );
+      // تحويل كل نتيجة بحث إلى UserWithFollow
+      const withFollow: UserWithFollow[] = filtered.map(result => {
+        // البحث عن المستخدم الكامل في قائمة users المحملة مسبقاً
+        const fullUser = users.find(u => u._id === result._id);
+        return searchResultToUserWithFollow(
+          result,
+          fullUser,
+          following.has(result._id),
+          onlineUsers.has(result._id)
+        );
+      });
       
-      setSearchResults(withFollowStatus);
+      setSearchResults(withFollow);
       
     } catch (error) {
       console.error('❌ [UsersPage] Search error:', error);
     } finally {
       setIsSearching(false);
     }
-  }, [currentUser, following, onlineUsers]);
+  }, [currentUser, following, onlineUsers, users]);
 
   // ==========================================================================
-  // دوال المتابعة - متطابقة مع ProfilePage
+  // دوال المتابعة
   // ==========================================================================
 
   const handleFollow = useCallback(async (userId: string) => {
@@ -218,11 +197,8 @@ export default function UsersPage() {
     setFollowLoading(prev => new Set(prev).add(userId));
 
     try {
-      console.log(`👥 [UsersPage] Following user: ${userId}`);
-      
-      const result = await followService.followUser(userId);
+      await followService.followUser(userId);
 
-      // تحديث القوائم
       const updateUser = (user: UserWithFollow) => 
         user._id === userId 
           ? { ...user, isFollowing: true, followersCount: (user.followersCount || 0) + 1 }
@@ -231,8 +207,6 @@ export default function UsersPage() {
       setUsers(prev => prev.map(updateUser));
       setSearchResults(prev => prev.map(updateUser));
       setFollowing(prev => new Set(prev).add(userId));
-
-      console.log(`✅ [UsersPage] Successfully followed user: ${userId}`);
 
     } catch (error) {
       console.error('❌ [UsersPage] Follow error:', error);
@@ -251,11 +225,8 @@ export default function UsersPage() {
     setFollowLoading(prev => new Set(prev).add(userId));
 
     try {
-      console.log(`👥 [UsersPage] Unfollowing user: ${userId}`);
-      
-      const result = await followService.unfollowUser(userId);
+      await followService.unfollowUser(userId);
 
-      // تحديث القوائم
       const updateUser = (user: UserWithFollow) => 
         user._id === userId 
           ? { ...user, isFollowing: false, followersCount: Math.max(0, (user.followersCount || 0) - 1) }
@@ -268,8 +239,6 @@ export default function UsersPage() {
         newSet.delete(userId);
         return newSet;
       });
-
-      console.log(`✅ [UsersPage] Successfully unfollowed user: ${userId}`);
 
     } catch (error) {
       console.error('❌ [UsersPage] Unfollow error:', error);
@@ -300,22 +269,26 @@ export default function UsersPage() {
       const allUsers = await userService.getAllUsers();
       const otherUsers = allUsers.filter(u => u._id !== currentUser?._id);
       
-      const usersWithFollowStatus = otherUsers.map(user => ({
-        ...user,
-        isFollowing: following.has(user._id),
-        followersCount: user.followersCount || 0,
-        followingCount: user.followingCount || 0,
-        postsCount: user.postsCount || 0,
-        isOnline: onlineUsers.has(user._id)
-      }));
+      const userIds = otherUsers.map(u => u._id);
+      const bulkStatus = await followService.getBulkFollowStatus(userIds);
       
-      setUsers(usersWithFollowStatus);
+      const refreshedUsers = otherUsers.map(user => 
+        toUserWithFollow(
+          user,
+          bulkStatus[user._id] || false,
+          onlineUsers.has(user._id)
+        )
+      );
+      
+      setUsers(refreshedUsers);
+      setError(null);
     } catch (error) {
       console.error('Refresh error:', error);
+      setError('فشل تحديث البيانات');
     } finally {
       setLoading(false);
     }
-  }, [currentUser, following, onlineUsers]);
+  }, [currentUser, onlineUsers]);
 
   // ==========================================================================
   // عرض التحميل
@@ -340,7 +313,6 @@ export default function UsersPage() {
 
   return (
     <div className={styles.container}>
-      {/* الهيدر */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <button 
@@ -384,7 +356,6 @@ export default function UsersPage() {
         </div>
       </header>
 
-      {/* شريط البحث */}
       <div className={styles.searchSection}>
         <div className={styles.searchBox}>
           <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
@@ -408,7 +379,6 @@ export default function UsersPage() {
         )}
       </div>
 
-      {/* رسالة الخطأ */}
       {error && (
         <div className={styles.errorMessage}>
           {error}
@@ -416,7 +386,6 @@ export default function UsersPage() {
         </div>
       )}
 
-      {/* قائمة المستخدمين */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner}></div>

@@ -2,7 +2,7 @@
 
 // 🔔 NotificationBell.tsx
 // مسؤول: عرض وإدارة الإشعارات بشكل آمن - نسخة محسنة بالكامل
-// الإصدار: 3.1.0 | آخر تحديث: 2026
+// الإصدار: 3.3.0 | آخر تحديث: 2026
 
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
@@ -47,6 +47,19 @@ const getSenderAvatar = (notification: Notification): string | null => {
 };
 
 /**
+ * الحصول على معرف المرسل بشكل آمن
+ */
+const getSenderId = (notification: Notification): string | undefined => {
+    if (typeof notification.sender === 'object' && notification.sender?._id) {
+        return notification.sender._id;
+    }
+    if (typeof notification.sender === 'string') {
+        return notification.sender;
+    }
+    return undefined;
+};
+
+/**
  * تنسيق وقت الإشعار
  */
 const formatNotificationTime = (dateString: string): string => {
@@ -79,13 +92,12 @@ const NotificationBell = memo(() => {
     
     const router = useRouter();
     const { user } = useAuth();
-    const { isConnected } = useSocket(); // ✅ استخدام hook مخصص
+    const { isConnected } = useSocket();
 
     // ==========================================================================
     // Effects
     // ==========================================================================
 
-    // تنظيف عند إلغاء التثبيت
     useEffect(() => {
         mounted.current = true;
         return () => {
@@ -93,12 +105,10 @@ const NotificationBell = memo(() => {
         };
     }, []);
 
-    // تحديث حالة اتصال Socket
     useEffect(() => {
         setSocketConnected(isConnected);
     }, [isConnected]);
 
-    // طلب صلاحية الإشعارات
     useEffect(() => {
         if (typeof window !== 'undefined' && Notification.permission === "default") {
             Notification.requestPermission().then(permission => {
@@ -107,13 +117,11 @@ const NotificationBell = memo(() => {
         }
     }, []);
 
-    // تحميل الإشعارات عند تسجيل الدخول
     useEffect(() => {
         if (!user || !mounted.current) return;
         
         loadNotifications(true);
         
-        // تحديث دوري (كل دقيقة)
         const interval = setInterval(() => {
             if (mounted.current) {
                 loadUnreadCount();
@@ -123,17 +131,13 @@ const NotificationBell = memo(() => {
         return () => clearInterval(interval);
     }, [user]);
 
-    // ✅ الاستماع للإشعارات الجديدة عبر Socket - نسخة محسنة
     useEffect(() => {
         if (!user || !mounted.current) return;
 
         console.log('🔔 [NotificationBell] Setting up notification listener...');
 
         const handleNewNotification = (notification: Notification) => {
-            if (!mounted.current) {
-                console.log('🔔 [NotificationBell] Component unmounted, ignoring notification');
-                return;
-            }
+            if (!mounted.current) return;
 
             console.log('📨 [NotificationBell] New notification received:', {
                 id: notification._id,
@@ -141,34 +145,21 @@ const NotificationBell = memo(() => {
                 message: notification.message
             });
             
-            // معالجة الإشعار لضمان وجود البيانات
-            const processedNotification = {
-                ...notification,
-                sender: {
-                    _id: notification.sender?._id || notification.senderId,
-                    name: getSenderName(notification),
-                    avatar: getSenderAvatar(notification)
-                }
-            };
-
-            // ✅ منع التكرار
             setNotifications(prev => {
-                // التحقق من عدم وجود الإشعار مسبقاً
                 if (prev.some(n => n._id === notification._id)) {
                     console.log('🔔 [NotificationBell] Duplicate notification prevented:', notification._id);
                     return prev;
                 }
-                return [processedNotification, ...prev];
+                return [notification, ...prev];
             });
             
             setUnreadCount(prev => prev + 1);
 
-            // إظهار إشعار في المتصفح
             if (Notification.permission === "granted") {
                 try {
-                    new Notification(processedNotification.title || "إشعار جديد", {
-                        body: `${getSenderName(processedNotification)}: ${processedNotification.message}`,
-                        icon: getSenderAvatar(processedNotification) || "/default-avatar.png",
+                    new Notification(notification.title || "إشعار جديد", {
+                        body: `${getSenderName(notification)}: ${notification.message}`,
+                        icon: getSenderAvatar(notification) || "/default-avatar.png",
                         tag: notification._id,
                         silent: false,
                     });
@@ -178,24 +169,20 @@ const NotificationBell = memo(() => {
             }
         };
 
-        // ✅ إضافة المستمع
         const unsubscribe = socketService.on("new_notification", handleNewNotification);
         
-        // ✅ التحقق من اتصال Socket
         if (socketService.isConnected()) {
             console.log('🔔 [NotificationBell] Socket is connected, listener active');
         } else {
             console.warn('🔔 [NotificationBell] Socket is not connected, notifications may be delayed');
         }
 
-        // تنظيف المستمع
         return () => {
             console.log('🔔 [NotificationBell] Cleaning up notification listener');
             unsubscribe();
         };
-    }, [user]); // ✅ إزالة الاعتماد على isConnected لمنع إعادة التسجيل
+    }, [user]);
 
-    // إغلاق القائمة عند النقر خارجها
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -211,9 +198,6 @@ const NotificationBell = memo(() => {
     // دوال تحميل البيانات
     // ==========================================================================
 
-    /**
-     * تحميل الإشعارات
-     */
     const loadNotifications = async (reset = false) => {
         if (!mounted.current || loadingRef.current) return;
         
@@ -248,9 +232,6 @@ const NotificationBell = memo(() => {
         }
     };
 
-    /**
-     * تحميل عدد الإشعارات غير المقروءة فقط
-     */
     const loadUnreadCount = async () => {
         try {
             const count = await notificationService.getUnreadCount();
@@ -262,9 +243,6 @@ const NotificationBell = memo(() => {
         }
     };
 
-    /**
-     * تحميل المزيد من الإشعارات (للسكرفلة اللانهائية)
-     */
     const loadMore = useCallback(() => {
         if (!loading && hasMore && mounted.current) {
             loadNotifications();
@@ -275,16 +253,12 @@ const NotificationBell = memo(() => {
     // دوال التفاعل مع الإشعارات
     // ==========================================================================
 
-    /**
-     * النقر على إشعار
-     */
     const handleNotificationClick = useCallback(async (notification: Notification) => {
         if (!mounted.current) return;
         
         try {
             console.log('🔔 [NotificationBell] Clicked notification:', notification._id);
             
-            // تحديث حالة القراءة إذا لم يكن مقروءاً
             if (!notification.read) {
                 await notificationService.markAsRead(notification._id);
                 if (mounted.current) {
@@ -297,9 +271,10 @@ const NotificationBell = memo(() => {
                 }
             }
 
-            // التوجيه بناءً على نوع الإشعار
-            if (notification.type === "message" && notification.sender?._id) {
-                router.push(`/messages/${notification.sender._id}`);
+            const senderId = getSenderId(notification);
+
+            if (notification.type === "message" && senderId) {
+                router.push(`/messages/${senderId}`);
             } else if (notification.type === "friend_request") {
                 router.push('/friends');
             } else if (notification.data?.postId) {
@@ -315,9 +290,6 @@ const NotificationBell = memo(() => {
         }
     }, [router]);
 
-    /**
-     * تحديد الكل كمقروء
-     */
     const handleMarkAllAsRead = useCallback(async () => {
         if (!mounted.current) return;
         
@@ -355,7 +327,6 @@ const NotificationBell = memo(() => {
                     </span>
                 )}
                 
-                {/* ✅ مؤشر حالة الاتصال (للتصحيح) */}
                 {!socketConnected && (
                     <span className={styles.connectionWarning} title="جاري إعادة الاتصال">●</span>
                 )}

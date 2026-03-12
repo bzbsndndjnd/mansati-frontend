@@ -1,3 +1,8 @@
+// app/messages/[userId]/page.tsx
+// 💬 صفحة المحادثة الكاملة - نسخة محسنة مع معالجة الأنواع
+// @version 2.0.0
+// @lastUpdated 2026
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -50,24 +55,19 @@ export default function FullChatPage() {
 
     loadData();
 
-    // ✅ استقبال الرسائل الجديدة
     const handleNewMessage = (message: Message) => {
       console.log("📨 New message received:", message);
-      const senderId = typeof message.sender === "object" ? message.sender._id : message.sender;
-      
+      const senderId = message.sender._id;
       if (senderId === userId) {
         setMessages(prev => [...prev, message]);
       }
     };
 
-    // ✅ استقبال الإشعارات الجديدة
     const handleNewNotification = (notification: Notification) => {
       console.log("🔔 New notification received:", notification);
       setNotifications(prev => [notification, ...prev]);
       
-      // إذا كان الإشعار عن رسالة جديدة من هذا الشخص
       if (notification.type === "message" && notification.sender?._id === userId) {
-        // إعادة تحميل المحادثة
         messageService.getConversation(userId).then(conversation => {
           setMessages(conversation);
         });

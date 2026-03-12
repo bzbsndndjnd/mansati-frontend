@@ -1,6 +1,9 @@
 // types/Admin.ts
 // 👑 مسؤول: أنواع بيانات لوحة التحكم
 
+import { User } from './User';
+import { Post } from './Post';
+
 export interface AdminStats {
   totalUsers: number;
   totalPosts: number;

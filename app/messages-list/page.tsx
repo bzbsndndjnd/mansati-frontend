@@ -1,37 +1,19 @@
 "use client";
 
+// app/messages-list/page.tsx
+// 💬 قائمة المحادثات - نسخة محسنة مع معالجة الأنواع
+// @version 2.1.0
+// @lastUpdated 2026
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import messageService from "@/services/messageService";
 import { socketService } from "@/services/socketService";
 import { sanitizeImageUrl } from "@/utils/security";
+import { Conversation } from "@/types/Message"; // ✅ استيراد النوع الموحد
 import styles from "./page.module.css";
 import { FaUserCircle } from "react-icons/fa";
-
-interface Conversation {
-  user: {
-    _id: string;
-    name: string;
-    avatar?: string;
-  };
-  lastMessage: {
-    _id: string;
-    text: string;
-    createdAt: string;
-    sender: {
-      _id: string;
-      name: string;
-      avatar?: string;
-    };
-    receiver: {
-      _id: string;
-      name: string;
-      avatar?: string;
-    };
-  };
-  unreadCount: number;
-}
 
 export default function MessagesListPage() {
   const router = useRouter();
@@ -51,7 +33,7 @@ export default function MessagesListPage() {
     const loadConversations = async () => {
       try {
         const data = await messageService.getUserConversations();
-        setConversations(data);
+        setConversations(data); // ✅ البيانات الآن آمنة تماماً
       } catch (error) {
         console.error("Failed to load conversations:", error);
       } finally {
@@ -73,19 +55,23 @@ export default function MessagesListPage() {
   }, [user]);
 
   const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const diffMinutes = Math.floor(diff / (1000 * 60));
-    const diffHours = Math.floor(diff / (1000 * 60 * 60));
-    const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const diffMinutes = Math.floor(diff / (1000 * 60));
+      const diffHours = Math.floor(diff / (1000 * 60 * 60));
+      const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 60) {
-      return `منذ ${diffMinutes} دقيقة`;
-    } else if (diffHours < 24) {
-      return `منذ ${diffHours} ساعة`;
-    } else {
-      return `منذ ${diffDays} يوم`;
+      if (diffMinutes < 60) {
+        return `منذ ${diffMinutes} دقيقة`;
+      } else if (diffHours < 24) {
+        return `منذ ${diffHours} ساعة`;
+      } else {
+        return `منذ ${diffDays} يوم`;
+      }
+    } catch {
+      return 'تاريخ غير معروف';
     }
   };
 
@@ -116,7 +102,6 @@ export default function MessagesListPage() {
         <div className={styles.conversationsList}>
           {conversations.map((conv) => {
             const isLastMessageFromMe = conv.lastMessage.sender._id === user?._id;
-            const senderName = isLastMessageFromMe ? 'أنت' : conv.user.name;
             
             return (
               <div

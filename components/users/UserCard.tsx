@@ -2,9 +2,9 @@
 
 // components/users/UserCard.tsx
 // 🃏 بطاقة المستخدم - نسخة محسنة مع دعم التحميل
-// الإصدار: 3.0.0 | آخر تحديث: 2026
+// الإصدار: 3.0.1 | آخر تحديث: 2026
 
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useEffect } from "react";
 import { User } from "@/types/User";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -23,7 +23,7 @@ interface UserCardProps {
   onFollow?: (userId: string) => Promise<void>;
   onUnfollow?: (userId: string) => Promise<void>;
   isFollowing?: boolean;
-  isLoading?: boolean; // ✅ إضافة خاصية التحميل
+  isLoading?: boolean;
   onClick?: () => void;
   showStats?: boolean;
   showEmail?: boolean;
@@ -36,7 +36,7 @@ const UserCard = memo(({
   onFollow,
   onUnfollow,
   isFollowing = false,
-  isLoading = false, // ✅ قيمة افتراضية
+  isLoading = false,
   onClick,
   showStats = true,
   showEmail = true,
@@ -46,8 +46,8 @@ const UserCard = memo(({
   const [imageError, setImageError] = useState(false);
   const [localIsFollowing, setLocalIsFollowing] = useState(isFollowing);
 
-  // تحديث الحالة المحلية عند تغير prop
-  useState(() => {
+  // ✅ استخدام useEffect بدلاً من useState لتحديث الحالة المحلية عند تغير prop
+  useEffect(() => {
     setLocalIsFollowing(isFollowing);
   }, [isFollowing]);
 

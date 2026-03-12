@@ -1,18 +1,21 @@
 // components/posts/ShareModal.tsx
+// 🔗 مشاركة المنشور - نسخة محسنة مع أمان وأداء عالي
+// @version 3.0.1
+// @lastUpdated 2026
+
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { FaCopy, FaPaperPlane, FaTimes, FaSearch, FaUserCircle, FaExternalLinkAlt } from "react-icons/fa";
 import messageService from "@/services/messageService";
-import { secureLog } from "@/utils/security";
+import { secureLog, sanitizeInput } from "@/utils/security";
+import { SECURITY_CONFIG } from "@/utils/constants";
 import styles from "./ShareModal.module.css";
 
-interface ShareModalProps {
-  postId: string;
-  postTitle?: string;
-  onClose: () => void;
-}
+// ============================================================================
+// أنواع البيانات
+// ============================================================================
 
 interface SearchUser {
   _id: string;
@@ -20,7 +23,21 @@ interface SearchUser {
   avatar?: string;
 }
 
+interface ShareModalProps {
+  postId: string;
+  postTitle?: string;
+  onClose: () => void;
+}
+
+// ============================================================================
+// المكون الرئيسي
+// ============================================================================
+
 export default function ShareModal({ postId, postTitle, onClose }: ShareModalProps) {
+  // ==========================================================================
+  // State
+  // ==========================================================================
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -29,42 +46,70 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  // ==========================================================================
+  // Refs
+  // ==========================================================================
+
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // ==========================================================================
+  // Constants
+  // ==========================================================================
 
   const postUrl = typeof window !== "undefined" ? `${window.location.origin}/posts/${postId}` : "";
   const postPath = `/posts/${postId}`;
 
+  // ==========================================================================
+  // Effects
+  // ==========================================================================
+
+  // تهيئة mounted
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, []);
 
-  // البحث عن المستخدمين مع debounce
+  // البحث مع debounce وإلغاء الطلبات القديمة
   useEffect(() => {
     if (searchQuery.length < 2) {
       setSearchResults([]);
       return;
     }
 
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+    // إلغاء أي طلب سابق
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+    
+    // إنشاء AbortController جديد
+    abortControllerRef.current = new AbortController();
 
     searchTimeoutRef.current = setTimeout(async () => {
+      if (!mounted.current) return;
+      
       setIsSearching(true);
       try {
-        const users = await messageService.searchUsers(searchQuery);
+        const users = await messageService.searchUsers(
+          sanitizeInput(searchQuery),
+          { signal: abortControllerRef.current?.signal }
+        );
+        
         if (mounted.current) {
-          setSearchResults(users);
+          setSearchResults(users || []);
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error.name === 'AbortError' || error.name === 'CanceledError') {
+          console.log('🛑 Search aborted');
+          return;
+        }
         console.error("Search error:", error);
+        secureLog.error("خطأ في البحث عن المستخدمين");
         if (mounted.current) {
           setSearchResults([]);
         }
@@ -76,20 +121,27 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
     }, 500);
   }, [searchQuery]);
 
-  const handleCopyLink = () => {
+  // ==========================================================================
+  // Handlers
+  // ==========================================================================
+
+  const handleCopyLink = useCallback(() => {
     navigator.clipboard.writeText(postUrl);
     setCopied(true);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (mounted.current) setCopied(false);
     }, 2000);
-  };
+    return () => clearTimeout(timer);
+  }, [postUrl]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!selectedUser) return;
+    
     setSending(true);
     try {
-      const content = messageText.trim()
-        ? `${messageText}\n\n${postTitle ? `**${postTitle}**\n` : ""}${postUrl}`
+      const safeMessage = sanitizeInput(messageText.trim());
+      const content = safeMessage
+        ? `${safeMessage}\n\n${postTitle ? `**${postTitle}**\n` : ""}${postUrl}`
         : `${postTitle ? `**${postTitle}**\n` : ""}${postUrl}`;
 
       await messageService.sendMessage(content, selectedUser._id);
@@ -101,10 +153,18 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
     } finally {
       if (mounted.current) setSending(false);
     }
-  };
+  }, [selectedUser, messageText, postTitle, postUrl, postId, onClose]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Escape") onClose();
+  }, [onClose]);
+
+  // ==========================================================================
+  // Render
+  // ==========================================================================
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={onClose} onKeyDown={handleKeyDown}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={onClose} aria-label="إغلاق">
           <FaTimes />
@@ -112,11 +172,11 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
 
         <h3 className={styles.title}>مشاركة المنشور</h3>
 
-        {/* قسم الرابط القابل للنقر والنسخ */}
+        {/* قسم الرابط */}
         <div className={styles.section}>
           <p className={styles.label}>رابط المنشور</p>
           
-          {/* رابط تشعبي أزرق (قابل للنقر مباشرة) */}
+          {/* رابط تشعبي مباشر */}
           <div className={styles.linkRow}>
             <Link 
               href={postPath}
@@ -129,7 +189,7 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
             </Link>
           </div>
 
-          {/* خيار النسخ الاحتياطي */}
+          {/* خيار النسخ */}
           <div className={styles.copyRow}>
             <input
               type="text"
@@ -142,6 +202,7 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
               onClick={handleCopyLink}
               className={styles.copyBtn}
               aria-label={copied ? "تم النسخ" : "نسخ الرابط"}
+              disabled={copied}
             >
               {copied ? "✓ تم النسخ" : <><FaCopy /> نسخ</>}
             </button>
@@ -150,7 +211,7 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
 
         <div className={styles.divider}>أو</div>
 
-        {/* قسم إرسال عبر الرسائل */}
+        {/* قسم الإرسال عبر الرسائل */}
         <div className={styles.section}>
           <p className={styles.label}>إرسال عبر الرسائل الخاصة</p>
 
@@ -165,6 +226,7 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={styles.searchInput}
                   aria-label="ابحث عن مستخدم"
+                  maxLength={50} // ✅ قيمة ثابتة مناسبة للبحث
                 />
                 {isSearching && <span className={styles.searchSpinner} aria-label="جاري البحث" />}
               </div>
@@ -183,6 +245,8 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
                           src={user.avatar}
                           alt={user.name}
                           className={styles.userAvatar}
+                          loading="lazy"
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
                       ) : (
                         <FaUserCircle className={styles.userAvatarIcon} />
@@ -201,6 +265,8 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
                     src={selectedUser.avatar}
                     alt={selectedUser.name}
                     className={styles.selectedAvatar}
+                    loading="lazy"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
                 ) : (
                   <FaUserCircle className={styles.selectedAvatarIcon} />
@@ -226,6 +292,7 @@ export default function ShareModal({ postId, postTitle, onClose }: ShareModalPro
                 className={styles.messageInput}
                 rows={3}
                 aria-label="نص الرسالة"
+                maxLength={SECURITY_CONFIG.MAX_CONTENT_LENGTH}
               />
               <button
                 onClick={handleSendMessage}

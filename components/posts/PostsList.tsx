@@ -1,6 +1,6 @@
 // components/posts/PostsList.tsx
 // 📋 قائمة المنشورات مع دعم التمرير إلى منشور محدد
-// @version 2.1.0
+// @version 2.1.1
 // @lastUpdated 2026
 
 "use client";
@@ -20,16 +20,21 @@ interface PostsListProps {
   onUnfollow?: (userId: string) => Promise<void>;
   following?: Set<string>;
   currentUserId?: string;
-  highlightId?: string; // معرف المنشور المراد التمرير إليه وتمييزه
+  highlightId?: string;
 }
 
-/**
- * قائمة المنشورات
- * 
- * تعرض جميع المنشورات في شكل قائمة عمودية.
- * إذا تم توفير highlightId صالح، تقوم بالتمرير إلى ذلك المنشور
- * وتطبيق تأثير تمييز عليه بعد تحميل القائمة.
- */
+// دالة مساعدة لاستخراج معرف الكاتب من كائن المنشور
+const getAuthorId = (post: Post): string => {
+  if (!post.author) return '';
+  if (typeof post.author === 'object' && post.author._id) {
+    return post.author._id;
+  }
+  if (typeof post.author === 'string') {
+    return post.author;
+  }
+  return '';
+};
+
 export default function PostsList({
   posts,
   onDelete,
@@ -42,26 +47,20 @@ export default function PostsList({
   currentUserId,
   highlightId,
 }: PostsListProps) {
-  // خريطة تحتوي على مراجع لعناصر DOM لكل منشور
   const postRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  // تأثير للتمرير إلى المنشور المحدد عند تغيير highlightId أو تحميل القائمة
   useEffect(() => {
-    // نتأكد من وجود highlightId صالح (ليس undefined وليس 'undefined')
     if (!highlightId || highlightId === 'undefined' || hasScrolled) return;
 
-    // ننتظر قليلاً للتأكد من أن جميع الـ refs قد تم تعيينها
     const timer = setTimeout(() => {
       const element = postRefs.current.get(highlightId);
       if (element) {
-        // تمرير سلس إلى المنشور
         element.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
 
-        // إضافة تأثير تمييز مؤقت
         element.classList.add(styles.highlighted);
         setTimeout(() => {
           element.classList.remove(styles.highlighted);
@@ -71,7 +70,7 @@ export default function PostsList({
       } else {
         console.warn(`⚠️ لم يتم العثور على منشور بالمعرف: ${highlightId}`);
       }
-    }, 300); // تأخير بسيط لضمان تحميل DOM
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [highlightId, posts, hasScrolled]);
@@ -86,31 +85,34 @@ export default function PostsList({
 
   return (
     <div className={styles.postsList}>
-      {posts.map((post) => (
-        <div
-          key={post._id}
-          ref={(el) => {
-            if (el) {
-              postRefs.current.set(post._id, el);
-            } else {
-              postRefs.current.delete(post._id);
-            }
-          }}
-          id={`post-${post._id}`}
-        >
-          <PostCard
-            post={post}
-            onDelete={onDelete}
-            onReact={onReact}
-            onComment={onComment}
-            onShare={onShare}
-            onFollow={onFollow}
-            onUnfollow={onUnfollow}
-            currentUserId={currentUserId}
-            isFollowing={following.has(post.author?._id || '')}
-          />
-        </div>
-      ))}
+      {posts.map((post) => {
+        const authorId = getAuthorId(post);
+        return (
+          <div
+            key={post._id}
+            ref={(el) => {
+              if (el) {
+                postRefs.current.set(post._id, el);
+              } else {
+                postRefs.current.delete(post._id);
+              }
+            }}
+            id={`post-${post._id}`}
+          >
+            <PostCard
+              post={post}
+              onDelete={onDelete}
+              onReact={onReact}
+              onComment={onComment}
+              onShare={onShare}
+              onFollow={onFollow}
+              onUnfollow={onUnfollow}
+              currentUserId={currentUserId}
+              isFollowing={following.has(authorId)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

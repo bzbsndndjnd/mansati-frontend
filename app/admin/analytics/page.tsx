@@ -1,61 +1,74 @@
+// app/admin/analytics/page.tsx
+// 📊 صفحة التحليلات - نسخة محسنة مع دعم الفلترة الزمنية والأمان
+// @version 3.2.1 - تم إزالة errorRate مؤقتاً لحين دعمه من الـ backend
+
 "use client";
 
-// app/admin/analytics/page.tsx
-// 📊 صفحة التحليلات - نسخة محسنة ومعالجة للأخطاء
-// @version 3.1.0
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import adminService from "@/services/adminService";
-import { secureLog } from "@/utils/security";
+import adminService, { AnalyticsData } from "@/services/adminService";
+import { secureLog, validateDateRange } from "@/utils/security";
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  AreaChart, Area
+  AreaChart, Area, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import {
   FaUsers, FaFileAlt, FaEnvelope, FaBell,
-  FaChartLine, FaCalendarAlt, FaSync,
-  FaArrowUp, FaArrowDown, FaGlobe
+  FaChartLine, FaSync, FaArrowUp, FaArrowDown, FaGlobe
 } from "react-icons/fa";
 import styles from "./page.module.css";
 
 // ============================================================================
-// واجهات البيانات (Interfaces)
+// المكونات الفرعية المحسنة (مع memo)
 // ============================================================================
 
-interface AnalyticsData {
-  overview: {
-    totalUsers: number;
-    totalPosts: number;
-    totalMessages: number;
-    totalNotifications: number;
-    activeUsersToday: number;
-    newUsersToday: number;
-    newPostsToday: number;
-    newMessagesToday: number;
-  };
-  trends: {
-    usersGrowth: number;
-    postsGrowth: number;
-    messagesGrowth: number;
-  };
-  charts: {
-    dailyActiveUsers: Array<{ date: string; count: number }>;
-    weeklyPosts: Array<{ day: string; posts: number }>;
-    userActivity: Array<{ hour: number; active: number }>;
-    contentDistribution: Array<{ name: string; value: number }>;
-  };
-  systemHealth: {
-    status: 'healthy' | 'warning' | 'error';
-    uptime: number;
-    responseTime: number;
-    errorRate: number;
-    cpuUsage: number;
-    memoryUsage: number;
-  };
+interface StatCardProps {
+  label: string;
+  value: number;
+  trend: number;
+  icon: React.ReactNode;
+  color: string;
 }
+
+const StatCard = memo(({ label, value, trend, icon, color }: StatCardProps) => (
+  <div className={styles.card}>
+    <div className={styles.cardHeader}>
+      <div className={styles.cardIcon} style={{ backgroundColor: `${color}15`, color }}>{icon}</div>
+      <span className={`${styles.trend} ${trend >= 0 ? styles.up : styles.down}`}>
+        {trend >= 0 ? <FaArrowUp /> : <FaArrowDown />} {Math.abs(trend)}%
+      </span>
+    </div>
+    <div className={styles.cardContent}>
+      <p className={styles.cardLabel}>{label}</p>
+      <h3 className={styles.cardValue}>{value.toLocaleString()}</h3>
+    </div>
+  </div>
+));
+
+StatCard.displayName = 'StatCard';
+
+interface HealthItemProps {
+  label: string;
+  value: string;
+  status: 'good' | 'warning' | 'error';
+}
+
+const HealthItem = memo(({ label, value, status }: HealthItemProps) => {
+  const statusClass = 
+    status === 'good' ? styles.statusGood : 
+    status === 'warning' ? styles.statusWarning : 
+    styles.statusError;
+  
+  return (
+    <div className={styles.healthItem}>
+      <span className={styles.healthLabel}>{label}</span>
+      <strong className={`${styles.healthValue} ${statusClass}`}>{value}</strong>
+    </div>
+  );
+});
+
+HealthItem.displayName = 'HealthItem';
 
 // ============================================================================
 // المكون الرئيسي
@@ -71,11 +84,33 @@ export default function AnalyticsPage() {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    end: new Date(),
-    label: 'week'
-  });
+  const [dateRangeType, setDateRangeType] = useState<'today' | 'week' | 'month'>('week');
+
+  // حساب نطاق التواريخ بناءً على النوع (مع memoization)
+  const dateRange = useMemo(() => {
+    const now = new Date();
+    let start: Date;
+
+    switch (dateRangeType) {
+      case 'today':
+        start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+        break;
+      case 'week':
+        start = new Date(now);
+        start.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        start = new Date(now);
+        start.setMonth(now.getMonth() - 1);
+        break;
+      default:
+        start = new Date(now);
+        start.setDate(now.getDate() - 7);
+    }
+
+    return { start, end: now, type: dateRangeType };
+  }, [dateRangeType]);
 
   // 1. حل مشكلة SSR مع Recharts: التأكد من تحميل المكون في المتصفح فقط
   useEffect(() => {
@@ -89,25 +124,29 @@ export default function AnalyticsPage() {
     }
   }, [user, router, mounted]);
 
-  // 3. دالة جلب البيانات مع معالجة محسنة للأخطاء (حل مشكلة Analytics load error)
+  // 3. دالة جلب البيانات مع معالجة محسنة للأخطاء
   const loadAnalytics = useCallback(async (showRefreshing = false) => {
     try {
       showRefreshing ? setRefreshing(true) : setLoading(true);
       setError(null);
 
-      const response = await adminService.getAnalytics({
+      // التحقق من صحة التواريخ قبل الإرسال
+      if (!validateDateRange(dateRange.start.toISOString(), dateRange.end.toISOString())) {
+        throw new Error('نطاق التواريخ غير صالح');
+      }
+
+      // استدعاء الخدمة مع تمرير التواريخ
+      const analyticsData = await adminService.getAnalytics({
         startDate: dateRange.start.toISOString(),
         endDate: dateRange.end.toISOString()
       });
 
       // التحقق من هيكلية البيانات (تجنب القراءة من undefined)
-      const analyticsResult = response?.data?.data || response?.data || response;
-      
-      if (analyticsResult && analyticsResult.overview) {
-        setData(analyticsResult);
+      if (analyticsData && analyticsData.overview) {
+        setData(analyticsData);
         secureLog.info('Analytics loaded successfully');
       } else {
-        console.error("Structure Error:", response);
+        console.error("Structure Error:", analyticsData);
         throw new Error("تنسيق بيانات التحليلات غير مدعوم");
       }
     } catch (err: any) {
@@ -126,15 +165,10 @@ export default function AnalyticsPage() {
     }
   }, [loadAnalytics, mounted]);
 
-  const changeDateRange = (val: string) => {
-    const now = new Date();
-    let start = new Date();
-    if (val === 'today') start.setHours(0, 0, 0, 0);
-    else if (val === 'week') start.setDate(now.getDate() - 7);
-    else if (val === 'month') start.setMonth(now.getMonth() - 1);
-    
-    setDateRange({ start, end: new Date(), label: val });
-  };
+  // دالة تغيير النطاق الزمني
+  const changeDateRange = useCallback((val: 'today' | 'week' | 'month') => {
+    setDateRangeType(val);
+  }, []);
 
   // الألوان المستخدمة في الرسوم البيانية
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
@@ -161,8 +195,8 @@ export default function AnalyticsPage() {
         </div>
         <div className={styles.actions}>
           <select 
-            value={dateRange.label} 
-            onChange={(e) => changeDateRange(e.target.value)} 
+            value={dateRangeType} 
+            onChange={(e) => changeDateRange(e.target.value as any)} 
             className={styles.select}
           >
             <option value="today">اليوم</option>
@@ -188,7 +222,7 @@ export default function AnalyticsPage() {
       )}
 
       {/* Main Stats Area */}
-      {data && (
+      {data ? (
         <>
           <div className={styles.statGrid}>
             <StatCard label="المستخدمين" value={data.overview.totalUsers} trend={data.trends.usersGrowth} icon={<FaUsers />} color="#3b82f6" />
@@ -253,42 +287,13 @@ export default function AnalyticsPage() {
                 <HealthItem label="زمن الاستجابة" value={`${data.systemHealth.responseTime}ms`} status={data.systemHealth.responseTime < 300 ? 'good' : 'warning'} />
                 <HealthItem label="استهلاك المعالج" value={`${data.systemHealth.cpuUsage}%`} status={data.systemHealth.cpuUsage < 70 ? 'good' : 'error'} />
                 <HealthItem label="استهلاك الذاكرة" value={`${data.systemHealth.memoryUsage}%`} status={data.systemHealth.memoryUsage < 80 ? 'good' : 'warning'} />
-                <HealthItem label="معدل الأخطاء" value={`${data.systemHealth.errorRate}%`} status={data.systemHealth.errorRate < 2 ? 'good' : 'error'} />
+                {/* تمت إزالة "معدل الأخطاء" مؤقتاً لحين دعمه من الـ backend */}
              </div>
           </section>
         </>
+      ) : (
+        <div className={styles.noData}>لا توجد بيانات متاحة</div>
       )}
-    </div>
-  );
-}
-
-// ============================================================================
-// المكونات الفرعية (Sub-components)
-// ============================================================================
-
-function StatCard({ label, value, trend, icon, color }: any) {
-  return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <div className={styles.cardIcon} style={{ backgroundColor: `${color}15`, color }}>{icon}</div>
-        <span className={`${styles.trend} ${trend >= 0 ? styles.up : styles.down}`}>
-          {trend >= 0 ? <FaArrowUp /> : <FaArrowDown />} {Math.abs(trend)}%
-        </span>
-      </div>
-      <div className={styles.cardContent}>
-        <p className={styles.cardLabel}>{label}</p>
-        <h3 className={styles.cardValue}>{value.toLocaleString()}</h3>
-      </div>
-    </div>
-  );
-}
-
-function HealthItem({ label, value, status }: { label: string, value: string, status: 'good' | 'warning' | 'error' }) {
-  const statusClass = status === 'good' ? styles.statusGood : status === 'warning' ? styles.statusWarning : styles.statusError;
-  return (
-    <div className={styles.healthItem}>
-       <span className={styles.healthLabel}>{label}</span>
-       <strong className={`${styles.healthValue} ${statusClass}`}>{value}</strong>
     </div>
   );
 }

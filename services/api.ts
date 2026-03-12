@@ -1,10 +1,31 @@
 // services/api.ts
 // 🌐 مسؤول: تكوين API مع طبقة أمان وتجديد التوكن
-// @version 4.0.0 - تعتمد كلياً على HttpOnly Cookies
+// @version 4.2.0 - تعتمد كلياً على HttpOnly Cookies
 
 import axios from 'axios';
 import { API_CONFIG, MESSAGES } from '@/utils/constants';
 import { secureLog } from '@/utils/security';
+
+// ============================================================================
+// واجهة الاستجابة الموحدة لجميع الخدمات
+// ============================================================================
+
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+    hasMore?: boolean;
+  };
+}
+
+// ============================================================================
+// إنشاء كائن axios
+// ============================================================================
 
 const api = axios.create({
   baseURL: `${API_CONFIG.BASE_URL}/api`,
@@ -41,7 +62,6 @@ const processQueue = (error: any, token: string | null = null) => {
 // Interceptors
 // ============================================================================
 
-// ✅ لم نعد نضيف Authorization header، كل شيء يتم عبر الكوكيز
 api.interceptors.request.use(
   (config) => {
     secureLog.info(`📤 API Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -53,13 +73,11 @@ api.interceptors.request.use(
   }
 );
 
-// ✅ معالجة الردود وإعادة محاولة التوكن منتهي الصلاحية
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // إذا لم يكن هناك استجابة (خطأ شبكة)
     if (!error.response) {
       secureLog.error('🌐 Network error:', error);
       return Promise.reject({
@@ -69,7 +87,6 @@ api.interceptors.response.use(
       });
     }
 
-    // إذا لم يكن الخطأ 401 (غير مصرح)، نعيد رفض الخطأ مع رسالة مناسبة
     if (error.response.status !== 401) {
       let userMessage = MESSAGES.ERRORS.DEFAULT;
       switch (error.response.status) {
@@ -96,7 +113,6 @@ api.interceptors.response.use(
       });
     }
 
-    // إذا كان الطلب هو محاولة تجديد التوكن وفشلت (منع التكرار اللانهائي)
     if (originalRequest.url === '/auth/refresh') {
       return Promise.reject({
         message: 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً',
@@ -104,10 +120,8 @@ api.interceptors.response.use(
       });
     }
 
-    // إذا كان الخطأ 401 ولم تتم إعادة المحاولة من قبل
     if (error.response.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        // يوجد تجديد قيد التنفيذ، نضيف الطلب إلى قائمة الانتظار
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then(() => {
@@ -127,9 +141,8 @@ api.interceptors.response.use(
         );
 
         secureLog.log('✅ تم تجديد التوكن بنجاح');
-        processQueue(null, null); // لا حاجة لتخزين توكن جديد
+        processQueue(null, null);
 
-        // إعادة المحاولة
         return api(originalRequest);
       } catch (refreshError) {
         secureLog.error('❌ فشل تجديد التوكن', refreshError);
@@ -145,7 +158,6 @@ api.interceptors.response.use(
       }
     }
 
-    // لأي خطأ آخر
     return Promise.reject(error);
   }
 );

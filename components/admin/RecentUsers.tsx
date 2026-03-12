@@ -2,7 +2,7 @@
 
 // components/admin/RecentUsers.tsx
 // 👑 مسؤول: عرض آخر المستخدمين المسجلين - نسخة محسنة
-// @version 4.0.0
+// @version 4.2.0
 // @lastUpdated 2026
 
 import { useState, useEffect, useCallback } from "react";
@@ -50,21 +50,15 @@ export default function RecentUsers() {
       const response = await adminService.getUsers({ limit: 5 });
       console.log('📥 [RecentUsers] Response:', response);
       
-      // ✅ التعامل مع جميع أشكال البيانات الممكنة
-      let usersData: User[] = [];
-      
-      if (response?.success === true && Array.isArray(response.data)) {
-        usersData = response.data;
-      } else if (Array.isArray(response)) {
-        usersData = response;
-      } else if (response?.data && Array.isArray(response.data)) {
-        usersData = response.data;
-      } else if (response?.users && Array.isArray(response.users)) {
-        usersData = response.users;
-      }
+      // استخراج البيانات من البنية المتوقعة { data, pagination }
+      const usersData = response?.data && Array.isArray(response.data) 
+        ? response.data 
+        : [];
       
       console.log(`✅ [RecentUsers] Loaded ${usersData.length} users`);
-      console.log('📥 [RecentUsers] First user sample:', usersData[0]);
+      if (usersData.length > 0) {
+        console.log('📥 [RecentUsers] First user sample:', usersData[0]);
+      }
       
       setUsers(usersData);
       
@@ -232,7 +226,7 @@ export default function RecentUsers() {
                 </div>
 
                 <div className={styles.userActions}>
-                  {/* ✅ تم تعديل الرابط لفتح صفحة الملف الشخصي العامة */}
+                  {/* زر عرض الملف الشخصي */}
                   <button
                     onClick={() => router.push(`/profile/${user._id}`)}
                     className={`${styles.actionButton} ${styles.view}`}

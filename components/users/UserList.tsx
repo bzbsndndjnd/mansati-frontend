@@ -1,19 +1,11 @@
-"use client";
-
 // components/users/UserList.tsx
 // 👥 قائمة المستخدمين - نسخة محسنة مع دعم المتابعة
-// الإصدار: 3.0.0 | آخر تحديث: 2026
+// الإصدار: 3.1.0 | آخر تحديث: 2026
 
-import { User } from "@/types/User";
+"use client";
+
+import { User, UserWithFollow } from "@/types/User"; // ✅ استيراد من المصدر الموحد
 import UserCard from "./UserCard";
-
-interface UserWithFollow extends User {
-  isFollowing?: boolean;
-  followersCount?: number;
-  followingCount?: number;
-  postsCount?: number;
-  isOnline?: boolean;
-}
 
 interface UserListProps {
   users: UserWithFollow[];

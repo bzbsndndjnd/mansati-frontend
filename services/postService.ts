@@ -1,17 +1,41 @@
 // services/postService.ts
+// 📝 خدمة المنشورات - نسخة محسنة مع ApiResponse واستخراج آمن
+// @version 3.0.0
+// @lastUpdated 2026
+
 import api from "./api";
 import { Post } from "@/types/Post";
 import { SECURITY_CONFIG, MESSAGES } from "@/utils/constants";
 import { sanitizeInput, secureLog } from "@/utils/security";
 
-// دالة مساعدة لاستخراج البيانات من استجابة API
-const extractData = <T>(response: any): T => {
-  // إذا كانت الاستجابة تحتوي على success → هيكل جديد
-  if (response.data?.success === true) {
-    return response.data.data;
+// ============================================================================
+// أنواع البيانات العامة للاستجابة
+// ============================================================================
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: any;
+}
+
+// ============================================================================
+// دوال مساعدة
+// ============================================================================
+
+/**
+ * استخراج البيانات من استجابة API بشكل آمن
+ */
+const extractData = <T>(response: any, defaultValue: T): T => {
+  if (!response) return defaultValue;
+  if (response?.success === true && response.data !== undefined) {
+    return response.data as T;
   }
-  // إذا كانت الاستجابة مباشرة → هيكل قديم
-  return response.data;
+  if (Array.isArray(response) || (typeof response === 'object' && response !== null)) {
+    return response as T;
+  }
+  secureLog.warn('Unexpected response structure', response);
+  return defaultValue;
 };
 
 const validatePostData = (formData: FormData): void => {
@@ -36,12 +60,19 @@ const validatePostData = (formData: FormData): void => {
   });
 };
 
+// ============================================================================
+// خدمة المنشورات
+// ============================================================================
+
 const postService = {
-  // جلب جميع البوستات
+  /**
+   * جلب جميع المنشورات
+   */
   async getAll(): Promise<Post[]> {
     try {
-      const response = await api.get<Post[]>("/posts");
-      return extractData<Post[]>(response);
+      const response = await api.get<ApiResponse<Post[]>>("/posts");
+      const posts = extractData<Post[]>(response.data, []);
+      return posts;
     } catch (error: any) {
       secureLog.error('فشل جلب البوستات');
       console.error('❌ Error fetching posts:', error.response?.data || error.message);
@@ -52,12 +83,14 @@ const postService = {
     }
   },
 
-  // جلب بوستات مستخدم محدد
+  /**
+   * جلب منشورات مستخدم محدد
+   */
   async getByUser(userId: string): Promise<Post[]> {
     try {
       console.log('📥 Fetching posts for user:', userId);
-      const response = await api.get<Post[]>(`/posts/user/${userId}`);
-      const posts = extractData<Post[]>(response);
+      const response = await api.get<ApiResponse<Post[]>>(`/posts/user/${userId}`);
+      const posts = extractData<Post[]>(response.data, []);
       console.log('✅ Posts fetched:', posts?.length || 0);
       return posts;
     } catch (error: any) {
@@ -70,7 +103,9 @@ const postService = {
     }
   },
 
-  // إنشاء بوست جديد
+  /**
+   * إنشاء منشور جديد
+   */
   async create(formData: FormData): Promise<Post> {
     try {
       validatePostData(formData);
@@ -81,23 +116,12 @@ const postService = {
       }
 
       console.log('📤 Creating new post');
-      const response = await api.post("/posts", formData, {
+      const response = await api.post<ApiResponse<Post>>("/posts", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
-      // استخراج المنشور من الاستجابة
-      let newPost: Post;
-      const data = response.data;
-      
-      if (data.success === true && data.data) {
-        newPost = data.data;
-      } else if (data.data) {
-        newPost = data.data;
-      } else if (data.post) {
-        newPost = data.post;
-      } else {
-        newPost = data;
-      }
+      const newPost = extractData<Post>(response.data, null as any);
+      if (!newPost) throw new Error('فشل إنشاء المنشور');
       
       console.log('✅ Post created successfully');
       return newPost;
@@ -111,11 +135,16 @@ const postService = {
     }
   },
 
-  // حذف بوست
+  /**
+   * حذف منشور
+   */
   async delete(id: string): Promise<void> {
     try {
       console.log('🗑️ Deleting post:', id);
-      await api.delete(`/posts/${id}`);
+      const response = await api.delete<ApiResponse<null>>(`/posts/${id}`);
+      if (!response.data?.success) {
+        throw new Error('فشل حذف المنشور');
+      }
       console.log('✅ Post deleted successfully');
     } catch (error: any) {
       secureLog.error('فشل حذف البوست');
@@ -127,7 +156,9 @@ const postService = {
     }
   },
 
-  // إضافة تعليق
+  /**
+   * إضافة تعليق
+   */
   async addComment(postId: string, text: string): Promise<Post> {
     try {
       if (text.length > SECURITY_CONFIG.MAX_COMMENT_LENGTH) {
@@ -135,12 +166,13 @@ const postService = {
       }
 
       console.log('💬 Adding comment to post:', postId);
-      const response = await api.post(
+      const response = await api.post<ApiResponse<Post>>(
         `/posts/${postId}/comment`,
         { text: sanitizeInput(text) }
       );
       
-      const updatedPost = extractData<Post>(response);
+      const updatedPost = extractData<Post>(response.data, null as any);
+      if (!updatedPost) throw new Error('فشل إضافة التعليق');
       console.log('✅ Comment added successfully');
       return updatedPost;
     } catch (error: any) {
@@ -153,13 +185,16 @@ const postService = {
     }
   },
 
-  // إضافة مشاركة
+  /**
+   * إضافة مشاركة
+   */
   async addShare(postId: string): Promise<Post> {
     try {
       console.log('🔄 Sharing post:', postId);
-      const response = await api.post(`/posts/${postId}/share`);
+      const response = await api.post<ApiResponse<Post>>(`/posts/${postId}/share`);
       
-      const updatedPost = extractData<Post>(response);
+      const updatedPost = extractData<Post>(response.data, null as any);
+      if (!updatedPost) throw new Error('فشل مشاركة المنشور');
       console.log('✅ Post shared successfully');
       return updatedPost;
     } catch (error: any) {
@@ -172,16 +207,19 @@ const postService = {
     }
   },
 
-  // إضافة تفاعل
+  /**
+   * إضافة تفاعل
+   */
   async addReaction(postId: string, type: string): Promise<Post> {
     try {
       console.log('❤️ Adding reaction to post:', postId, 'type:', type);
-      const response = await api.post(
+      const response = await api.post<ApiResponse<Post>>(
         `/posts/${postId}/react`,
         { type }
       );
       
-      const updatedPost = extractData<Post>(response);
+      const updatedPost = extractData<Post>(response.data, null as any);
+      if (!updatedPost) throw new Error('فشل إضافة التفاعل');
       console.log('✅ Reaction added successfully');
       return updatedPost;
     } catch (error: any) {

@@ -1,15 +1,31 @@
 // services/adminService.ts
-// 👑 مسؤول: خدمة لوحة التحكم والمهام الإدارية
-// @version 1.0.0
-// @lastUpdated 2026
+// 👑 مسؤول: خدمة لوحة التحكم والمهام الإدارية - نسخة محسنة مع ApiResponse موحد
+// @version 3.0.0
+// @lastUpdated 2026-03-13
 
 import api from "./api";
 import { User } from "@/types/User";
-import { secureLog, sanitizeInput } from "@/utils/security";
+import { secureLog, sanitizeInput, validateDateRange } from "@/utils/security";
 import { MESSAGES } from "@/utils/constants";
 
 // ============================================================================
-// أنواع البيانات
+// أنواع البيانات العامة للاستجابة
+// ============================================================================
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+// ============================================================================
+// أنواع البيانات الخاصة بالخدمة
 // ============================================================================
 
 export interface DashboardStats {
@@ -65,6 +81,7 @@ export interface Conversation {
   lastMessage?: any;
   unreadCount: number;
   messagesCount: number;
+  createdAt?: string;
   updatedAt: string;
 }
 
@@ -105,14 +122,68 @@ export interface AnalyticsData {
 }
 
 // ============================================================================
+// أنواع الباراميترات للطلبات
+// ============================================================================
+
+export interface AnalyticsParams {
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface GetUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export interface GetPostsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  userId?: string;
+}
+
+export interface GetConversationsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+// ============================================================================
 // دوال مساعدة
 // ============================================================================
 
-const extractData = <T>(response: any): T => {
-  if (response.data?.success === true) {
-    return response.data.data;
+/**
+ * استخراج البيانات من استجابة API بشكل آمن
+ */
+const extractData = <T>(response: any, defaultValue: T): T => {
+  if (!response) return defaultValue;
+
+  // هيكل { success: true, data: [...] }
+  if (response?.success === true && response.data !== undefined) {
+    return response.data as T;
   }
-  return response.data;
+
+  // استجابة مباشرة كمصفوفة أو كائن
+  if (Array.isArray(response) || (typeof response === 'object' && response !== null)) {
+    return response as T;
+  }
+
+  secureLog.warn('Unexpected response structure', response);
+  return defaultValue;
+};
+
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams.append(key, value.toString());
+    }
+  });
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : '';
 };
 
 // ============================================================================
@@ -124,19 +195,16 @@ const adminService = {
   // ✅ بيانات المدير الحالي
   // ========================================================================
 
-  /**
-   * جلب بيانات المدير الحالي (الملف الشخصي)
-   */
   async getCurrentAdmin(): Promise<User> {
     try {
-      console.log('👑 [adminService] Fetching current admin profile...');
-      const response = await api.get('/admin/profile');
-      const admin = extractData<User>(response);
-      console.log('✅ Admin profile loaded:', admin.email);
+      secureLog.info('👑 [adminService] Fetching current admin profile...');
+      const response = await api.get<ApiResponse<User>>('/admin/profile');
+      const admin = extractData<User>(response.data, null as any);
+      if (!admin) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info(`✅ Admin profile loaded: ${admin.email}`);
       return admin;
     } catch (error: any) {
-      console.error('❌ [adminService] Get current admin error:', error);
-      secureLog.error('فشل جلب بيانات المدير');
+      secureLog.error('❌ [adminService] Get current admin error', { message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
@@ -145,36 +213,42 @@ const adminService = {
   // ✅ إحصائيات لوحة التحكم
   // ========================================================================
 
-  /**
-   * جلب إحصائيات الموقع
-   */
   async getStats(): Promise<DashboardStats> {
     try {
-      console.log('📊 [adminService] Fetching stats...');
-      const response = await api.get('/admin/stats');
-      const stats = extractData<DashboardStats>(response);
-      console.log('✅ Stats loaded');
+      secureLog.info('📊 [adminService] Fetching stats...');
+      const response = await api.get<ApiResponse<DashboardStats>>('/admin/stats');
+      const stats = extractData<DashboardStats>(response.data, null as any);
+      if (!stats) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info('✅ Stats loaded');
       return stats;
     } catch (error: any) {
-      console.error('❌ [adminService] Get stats error:', error);
-      secureLog.error('فشل جلب الإحصائيات');
+      secureLog.error('❌ [adminService] Get stats error', { message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
 
-  /**
-   * جلب التحليلات المتقدمة
-   */
-  async getAnalytics(): Promise<AnalyticsData> {
+  async getAnalytics(params?: AnalyticsParams): Promise<AnalyticsData> {
     try {
-      console.log('📈 [adminService] Fetching analytics...');
-      const response = await api.get('/admin/analytics');
-      const analytics = extractData<AnalyticsData>(response);
-      console.log('✅ Analytics loaded');
+      secureLog.info('📈 [adminService] Fetching analytics...');
+      
+      if (params?.startDate && params?.endDate) {
+        if (!validateDateRange(params.startDate, params.endDate)) {
+          throw new Error('نطاق التواريخ غير صالح');
+        }
+      }
+
+      const queryString = buildQueryString({
+        startDate: params?.startDate,
+        endDate: params?.endDate
+      });
+
+      const response = await api.get<ApiResponse<AnalyticsData>>(`/admin/analytics${queryString}`);
+      const analytics = extractData<AnalyticsData>(response.data, null as any);
+      if (!analytics) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info('✅ Analytics loaded');
       return analytics;
     } catch (error: any) {
-      console.error('❌ [adminService] Get analytics error:', error);
-      secureLog.error('فشل جلب التحليلات');
+      secureLog.error('❌ [adminService] Get analytics error', { message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
@@ -183,88 +257,71 @@ const adminService = {
   // ✅ المستخدمين (إداري)
   // ========================================================================
 
-  /**
-   * جلب آخر المستخدمين
-   */
   async getRecentUsers(limit: number = 5): Promise<User[]> {
     try {
-      console.log(`👥 [adminService] Fetching recent ${limit} users...`);
-      const response = await api.get(`/admin/users/recent?limit=${limit}`);
-      const users = extractData<User[]>(response);
-      console.log(`✅ Loaded ${users.length} recent users`);
+      secureLog.info(`👥 [adminService] Fetching recent ${limit} users...`);
+      const response = await api.get<ApiResponse<User[]>>(`/admin/users/recent?limit=${limit}`);
+      const users = extractData<User[]>(response.data, []);
+      secureLog.info(`✅ Loaded ${users.length} recent users`);
       return users;
     } catch (error: any) {
-      console.error('❌ [adminService] Get recent users error:', error);
-      secureLog.error('فشل جلب المستخدمين');
+      secureLog.error('❌ [adminService] Get recent users error', { message: error.message });
       return [];
     }
   },
 
-  /**
-   * جلب جميع المستخدمين (مع فلترة)
-   */
-  async getUsers(params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    role?: string;
-    isActive?: boolean;
-  } = {}): Promise<{ data: User[]; pagination: any }> {
+  async getUsers(params: GetUsersParams = {}): Promise<{ data: User[]; pagination: any }> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
-      if (params.search) queryParams.append('search', sanitizeInput(params.search));
-      if (params.role) queryParams.append('role', params.role);
-      if (params.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
+      const queryString = buildQueryString({
+        page: params.page,
+        limit: params.limit,
+        search: params.search ? sanitizeInput(params.search) : undefined,
+        role: params.role,
+        isActive: params.isActive
+      });
 
-      console.log('📋 [adminService] Fetching users...');
-      const response = await api.get(`/admin/users?${queryParams.toString()}`);
+      secureLog.info('📋 [adminService] Fetching users...');
+      const response = await api.get<ApiResponse<User[]>>(`/admin/users${queryString}`);
       
-      if (response.data?.success === true) {
+      if (response.data?.success && Array.isArray(response.data.data)) {
         return {
-          data: response.data.data || [],
+          data: response.data.data,
           pagination: response.data.pagination || { page: 1, limit: 20, total: 0, pages: 0 }
         };
       }
-      return { data: response.data?.data || [], pagination: {} };
+      return { data: [], pagination: {} };
     } catch (error: any) {
-      console.error('❌ [adminService] Get users error:', error);
-      secureLog.error('فشل جلب المستخدمين');
+      secureLog.error('❌ [adminService] Get users error', { message: error.message });
       return { data: [], pagination: {} };
     }
   },
 
-  /**
-   * تحديث مستخدم (دور/حالة)
-   */
   async updateUser(userId: string, updates: { role?: string; isActive?: boolean }): Promise<User> {
     try {
       if (!userId) throw new Error('معرف المستخدم مطلوب');
-      console.log(`✏️ [adminService] Updating user ${userId}...`);
-      const response = await api.put(`/admin/users/${userId}`, updates);
-      const user = extractData<User>(response);
-      console.log('✅ User updated');
+      secureLog.info(`✏️ [adminService] Updating user ${userId}...`);
+      const response = await api.put<ApiResponse<User>>(`/admin/users/${userId}`, updates);
+      const user = extractData<User>(response.data, null as any);
+      if (!user) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info('✅ User updated');
       return user;
     } catch (error: any) {
-      console.error('❌ [adminService] Update user error:', error);
-      secureLog.error('فشل تحديث المستخدم');
+      secureLog.error('❌ [adminService] Update user error', { userId, message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
 
-  /**
-   * حذف مستخدم
-   */
   async deleteUser(userId: string): Promise<void> {
     try {
       if (!userId) throw new Error('معرف المستخدم مطلوب');
-      console.log(`🗑️ [adminService] Deleting user ${userId}...`);
-      await api.delete(`/admin/users/${userId}`);
-      console.log('✅ User deleted');
+      secureLog.info(`🗑️ [adminService] Deleting user ${userId}...`);
+      const response = await api.delete<ApiResponse<null>>(`/admin/users/${userId}`);
+      if (!response.data?.success) {
+        throw new Error('فشل حذف المستخدم');
+      }
+      secureLog.info('✅ User deleted');
     } catch (error: any) {
-      console.error('❌ [adminService] Delete user error:', error);
-      secureLog.error('فشل حذف المستخدم');
+      secureLog.error('❌ [adminService] Delete user error', { userId, message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
@@ -273,68 +330,55 @@ const adminService = {
   // ✅ المنشورات (إداري)
   // ========================================================================
 
-  /**
-   * جلب آخر المنشورات
-   */
   async getRecentPosts(limit: number = 5): Promise<any[]> {
     try {
-      console.log(`📝 [adminService] Fetching recent ${limit} posts...`);
-      const response = await api.get(`/admin/posts/recent?limit=${limit}`);
-      const posts = extractData<any[]>(response);
-      console.log(`✅ Loaded ${posts.length} recent posts`);
+      secureLog.info(`📝 [adminService] Fetching recent ${limit} posts...`);
+      const response = await api.get<ApiResponse<any[]>>(`/admin/posts/recent?limit=${limit}`);
+      const posts = extractData<any[]>(response.data, []);
+      secureLog.info(`✅ Loaded ${posts.length} recent posts`);
       return posts;
     } catch (error: any) {
-      console.error('❌ [adminService] Get recent posts error:', error);
-      secureLog.error('فشل جلب المنشورات');
+      secureLog.error('❌ [adminService] Get recent posts error', { message: error.message });
       return [];
     }
   },
 
-  /**
-   * جلب جميع المنشورات
-   */
-  async getPosts(params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    userId?: string;
-  } = {}): Promise<{ data: any[]; pagination: any }> {
+  async getPosts(params: GetPostsParams = {}): Promise<{ data: any[]; pagination: any }> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
-      if (params.search) queryParams.append('search', sanitizeInput(params.search));
-      if (params.userId) queryParams.append('userId', params.userId);
+      const queryString = buildQueryString({
+        page: params.page,
+        limit: params.limit,
+        search: params.search ? sanitizeInput(params.search) : undefined,
+        userId: params.userId
+      });
 
-      console.log('📋 [adminService] Fetching posts...');
-      const response = await api.get(`/admin/posts?${queryParams.toString()}`);
+      secureLog.info('📋 [adminService] Fetching posts...');
+      const response = await api.get<ApiResponse<any[]>>(`/admin/posts${queryString}`);
       
-      if (response.data?.success === true) {
+      if (response.data?.success && Array.isArray(response.data.data)) {
         return {
-          data: response.data.data || [],
+          data: response.data.data,
           pagination: response.data.pagination || {}
         };
       }
-      return { data: response.data?.data || [], pagination: {} };
+      return { data: [], pagination: {} };
     } catch (error: any) {
-      console.error('❌ [adminService] Get posts error:', error);
-      secureLog.error('فشل جلب المنشورات');
+      secureLog.error('❌ [adminService] Get posts error', { message: error.message });
       return { data: [], pagination: {} };
     }
   },
 
-  /**
-   * حذف منشور
-   */
   async deletePost(postId: string): Promise<void> {
     try {
       if (!postId) throw new Error('معرف المنشور مطلوب');
-      console.log(`🗑️ [adminService] Deleting post ${postId}...`);
-      await api.delete(`/admin/posts/${postId}`);
-      console.log('✅ Post deleted');
+      secureLog.info(`🗑️ [adminService] Deleting post ${postId}...`);
+      const response = await api.delete<ApiResponse<null>>(`/admin/posts/${postId}`);
+      if (!response.data?.success) {
+        throw new Error('فشل حذف المنشور');
+      }
+      secureLog.info('✅ Post deleted');
     } catch (error: any) {
-      console.error('❌ [adminService] Delete post error:', error);
-      secureLog.error('فشل حذف المنشور');
+      secureLog.error('❌ [adminService] Delete post error', { postId, message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
@@ -343,19 +387,16 @@ const adminService = {
   // ✅ حالة النظام
   // ========================================================================
 
-  /**
-   * جلب حالة النظام
-   */
   async getSystemHealth(): Promise<SystemHealth> {
     try {
-      console.log('💻 [adminService] Fetching system health...');
-      const response = await api.get('/admin/system/health');
-      const health = extractData<SystemHealth>(response);
-      console.log('✅ System health loaded');
+      secureLog.info('💻 [adminService] Fetching system health...');
+      const response = await api.get<ApiResponse<SystemHealth>>('/admin/system/health');
+      const health = extractData<SystemHealth>(response.data, null as any);
+      if (!health) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info('✅ System health loaded');
       return health;
     } catch (error: any) {
-      console.error('❌ [adminService] Get system health error:', error);
-      secureLog.error('فشل جلب حالة النظام');
+      secureLog.error('❌ [adminService] Get system health error', { message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
@@ -364,111 +405,96 @@ const adminService = {
   // ✅ الرسائل (إداري)
   // ========================================================================
 
-  /**
-   * إحصائيات الرسائل
-   */
   async getMessagesStats(): Promise<MessagesStats> {
     try {
-      console.log('📊 [adminService] Fetching messages stats...');
-      const response = await api.get('/admin/messages/stats');
-      const stats = extractData<MessagesStats>(response);
-      console.log('✅ Messages stats loaded');
+      secureLog.info('📊 [adminService] Fetching messages stats...');
+      const response = await api.get<ApiResponse<MessagesStats>>('/admin/messages/stats');
+      const stats = extractData<MessagesStats>(response.data, null as any);
+      if (!stats) throw new Error('استجابة غير صالحة من الخادم');
+      secureLog.info('✅ Messages stats loaded');
       return stats;
     } catch (error: any) {
-      console.error('❌ [adminService] Get messages stats error:', error);
-      secureLog.error('فشل جلب إحصائيات الرسائل');
+      secureLog.error('❌ [adminService] Get messages stats error', { message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
 
-  /**
-   * جلب جميع المحادثات
-   */
-  async getAllConversations(params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-  } = {}): Promise<{ data: Conversation[]; pagination: any }> {
+  async getAllConversations(params: GetConversationsParams = {}): Promise<{ data: Conversation[]; pagination: any }> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
-      if (params.search) queryParams.append('search', sanitizeInput(params.search));
+      const queryString = buildQueryString({
+        page: params.page,
+        limit: params.limit,
+        search: params.search ? sanitizeInput(params.search) : undefined
+      });
 
-      console.log('💬 [adminService] Fetching conversations...');
-      const response = await api.get(`/admin/conversations?${queryParams.toString()}`);
+      secureLog.info('💬 [adminService] Fetching conversations...');
+      const response = await api.get<ApiResponse<Conversation[]>>(`/admin/conversations${queryString}`);
       
-      if (response.data?.success === true) {
+      if (response.data?.success && Array.isArray(response.data.data)) {
         return {
-          data: response.data.data || [],
+          data: response.data.data,
           pagination: response.data.pagination || {}
         };
       }
-      return { data: response.data?.data || [], pagination: {} };
+      return { data: [], pagination: {} };
     } catch (error: any) {
-      console.error('❌ [adminService] Get conversations error:', error);
-      secureLog.error('فشل جلب المحادثات');
+      secureLog.error('❌ [adminService] Get conversations error', { message: error.message });
       return { data: [], pagination: {} };
     }
   },
 
-  /**
-   * جلب رسائل محادثة محددة
-   */
   async getConversationMessages(conversationId: string, params: {
     page?: number;
     limit?: number;
   } = {}): Promise<{ data: MessageDetail[]; pagination: any }> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append('page', params.page.toString());
-      if (params.limit) queryParams.append('limit', params.limit.toString());
+      const queryString = buildQueryString({
+        page: params.page,
+        limit: params.limit
+      });
 
-      console.log(`💬 [adminService] Fetching messages for conversation ${conversationId}...`);
-      const response = await api.get(`/admin/conversations/${conversationId}/messages?${queryParams.toString()}`);
+      secureLog.info(`💬 [adminService] Fetching messages for conversation ${conversationId}...`);
+      const response = await api.get<ApiResponse<MessageDetail[]>>(`/admin/conversations/${conversationId}/messages${queryString}`);
       
-      if (response.data?.success === true) {
+      if (response.data?.success && Array.isArray(response.data.data)) {
         return {
-          data: response.data.data || [],
+          data: response.data.data,
           pagination: response.data.pagination || {}
         };
       }
-      return { data: response.data?.data || [], pagination: {} };
+      return { data: [], pagination: {} };
     } catch (error: any) {
-      console.error('❌ [adminService] Get conversation messages error:', error);
-      secureLog.error('فشل جلب رسائل المحادثة');
+      secureLog.error('❌ [adminService] Get conversation messages error', { conversationId, message: error.message });
       return { data: [], pagination: {} };
     }
   },
 
-  /**
-   * حذف رسالة
-   */
   async deleteMessage(messageId: string): Promise<void> {
     try {
       if (!messageId) throw new Error('معرف الرسالة مطلوب');
-      console.log(`🗑️ [adminService] Deleting message ${messageId}...`);
-      await api.delete(`/admin/messages/${messageId}`);
-      console.log('✅ Message deleted');
+      secureLog.info(`🗑️ [adminService] Deleting message ${messageId}...`);
+      const response = await api.delete<ApiResponse<null>>(`/admin/messages/${messageId}`);
+      if (!response.data?.success) {
+        throw new Error('فشل حذف الرسالة');
+      }
+      secureLog.info('✅ Message deleted');
     } catch (error: any) {
-      console.error('❌ [adminService] Delete message error:', error);
-      secureLog.error('فشل حذف الرسالة');
+      secureLog.error('❌ [adminService] Delete message error', { messageId, message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   },
 
-  /**
-   * حذف محادثة كاملة
-   */
   async deleteConversation(conversationId: string): Promise<void> {
     try {
       if (!conversationId) throw new Error('معرف المحادثة مطلوب');
-      console.log(`🗑️ [adminService] Deleting conversation ${conversationId}...`);
-      await api.delete(`/admin/conversations/${conversationId}`);
-      console.log('✅ Conversation deleted');
+      secureLog.info(`🗑️ [adminService] Deleting conversation ${conversationId}...`);
+      const response = await api.delete<ApiResponse<null>>(`/admin/conversations/${conversationId}`);
+      if (!response.data?.success) {
+        throw new Error('فشل حذف المحادثة');
+      }
+      secureLog.info('✅ Conversation deleted');
     } catch (error: any) {
-      console.error('❌ [adminService] Delete conversation error:', error);
-      secureLog.error('فشل حذف المحادثة');
+      secureLog.error('❌ [adminService] Delete conversation error', { conversationId, message: error.message });
       throw new Error(error.response?.data?.message || MESSAGES.ERRORS.DEFAULT);
     }
   }

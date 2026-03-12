@@ -2,7 +2,7 @@
 
 // 👤 ProfilePage.tsx
 // مسؤول: عرض الملف الشخصي مع جميع التفاصيل - نسخة محسنة بالكامل ومتوافقة مع نظام الكوكيز
-// الإصدار: 9.0.0 | آخر تحديث: 2026
+// الإصدار: 9.0.1 | آخر تحديث: 2026
 // المميزات:
 // - دعم كامل للمتابعة وإلغاء المتابعة مع تحديث فوري للعدادات
 // - تكامل مع نظام المصادقة عبر HttpOnly Cookies
@@ -62,8 +62,9 @@ export default function ProfilePage() {
     const mounted = useRef(true);
     const initialLoadDone = useRef(false);
     const fetchInProgress = useRef(false);
-    const typingTimeoutRef = useRef<NodeJS.Timeout>();
-    const searchTimeoutRef = useRef<NodeJS.Timeout>();
+    // ✅ التعديل: استخدام ReturnType<typeof setTimeout> بدلاً من NodeJS.Timeout
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // ==========================================================================
     // السياق (Context)

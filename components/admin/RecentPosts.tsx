@@ -3,10 +3,10 @@
 /**
  * @component RecentPosts
  * @description مكون عرض آخر المنشورات في لوحة الإدارة - نسخة احترافية 2026
- * @version 6.1.0
+ * @version 6.2.0
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   FaTrash, 
   FaEye, 
@@ -34,8 +34,9 @@ interface Post {
   content: string;
   author: Author | string;
   createdAt: string;
-  likes: number;
-  comments: number;
+  likes: number;          // عدد الإعجابات
+  comments: number;       // عدد التعليقات
+  shares?: number;        // عدد المشاركات (اختياري)
 }
 
 export default function RecentPosts() {
@@ -155,50 +156,48 @@ export default function RecentPosts() {
                 <p className={styles.postContent}>{post.content}</p>
 
                 <div className={styles.footer}>
-  <div className={styles.statsGroup}>
-    {/* التفاعلات: نحسب طول المصفوفة بشكل آمن */}
-    <span className={styles.statItem} title="إجمالي التفاعلات">
-      <FaHeart className={styles.iconLike} /> 
-      {Array.isArray(post.reactions) ? post.reactions.length : 0}
-    </span>
+                  <div className={styles.statsGroup}>
+                    {/* عدد الإعجابات */}
+                    <span className={styles.statItem} title="إجمالي الإعجابات">
+                      <FaHeart className={styles.iconLike} /> {post.likes ?? 0}
+                    </span>
 
-    {/* التعليقات: نحسب طول المصفوفة بشكل آمن */}
-    <span className={styles.statItem} title="عدد التعليقات">
-      <FaComment className={styles.iconComment} /> 
-      {Array.isArray(post.comments) ? post.comments.length : 0}
-    </span>
-    
-    {/* (إضافي) المشاركات إذا أردت عرضها */}
-    {Array.isArray(post.shares) && post.shares.length > 0 && (
-      <span className={styles.statItem}>
-        <small>مشاركة: {post.shares.length}</small>
-      </span>
-    )}
-  </div>
+                    {/* عدد التعليقات */}
+                    <span className={styles.statItem} title="عدد التعليقات">
+                      <FaComment className={styles.iconComment} /> {post.comments ?? 0}
+                    </span>
+                    
+                    {/* عدد المشاركات (إذا كانت متوفرة) */}
+                    {post.shares !== undefined && post.shares > 0 && (
+                      <span className={styles.statItem} title="عدد المشاركات">
+                        <small>مشاركة: {post.shares}</small>
+                      </span>
+                    )}
+                  </div>
 
-  <div className={styles.actionGroup}>
-    <button 
-      onClick={() => router.push(`/posts/${post._id}`)}
-      className={`${styles.iconBtn} ${styles.viewBtn}`}
-      aria-label="معاينة المنشور"
-      title="معاينة"
-    >
-      <FaEye />
-    </button>
-    
-    <button 
-      onClick={() => { 
-        setSelectedPost(post); 
-        setShowConfirm(true); 
-      }}
-      className={`${styles.iconBtn} ${styles.deleteBtn}`}
-      aria-label="حذف المنشور"
-      title="حذف"
-    >
-      <FaTrash />
-    </button>
-  </div>
-</div>
+                  <div className={styles.actionGroup}>
+                    <button 
+                      onClick={() => router.push(`/posts/${post._id}`)}
+                      className={`${styles.iconBtn} ${styles.viewBtn}`}
+                      aria-label="معاينة المنشور"
+                      title="معاينة"
+                    >
+                      <FaEye />
+                    </button>
+                    
+                    <button 
+                      onClick={() => { 
+                        setSelectedPost(post); 
+                        setShowConfirm(true); 
+                      }}
+                      className={`${styles.iconBtn} ${styles.deleteBtn}`}
+                      aria-label="حذف المنشور"
+                      title="حذف"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
               </article>
             );
           })

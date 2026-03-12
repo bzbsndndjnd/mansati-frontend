@@ -1,9 +1,11 @@
+"use client";
+
 // 💬 ChatBox.tsx
 // مسؤول: صندوق المحادثة مع دعم كامل للرسائل والإشعارات والروابط التشعبية (بدون مكتبات)
-// الإصدار: 5.2.0 | آخر تحديث: 2026
+// الإصدار: 5.4.0 | آخر تحديث: 2026
 
 import { useState, useEffect, useRef, useCallback, memo } from "react";
-import { Message } from "@/types/Message";
+import { Message, toMessageUser } from "@/types/Message";
 import { socketService } from "@/services/socketService";
 import { sanitizeInput, secureLog, sanitizeImageUrl } from "@/utils/security";
 import { SECURITY_CONFIG } from "@/utils/constants";
@@ -22,6 +24,7 @@ interface ChatBoxProps {
     onSearchUser: (query: string) => Promise<Array<{ _id: string; name: string; avatar?: string }>>;
     onSelectReceiver: (id: string) => void;
     onRefreshConversation?: (receiverId: string) => Promise<void>;
+    onTyping?: (isTyping: boolean) => void;
 }
 
 interface SearchUserResult {
@@ -35,17 +38,10 @@ interface SearchUserResult {
 // ============================================================================
 
 const getSenderInfo = (msg: Message) => {
-    if (typeof msg.sender === "object") {
-        return {
-            id: msg.sender._id,
-            name: msg.sender.name || "مستخدم",
-            avatar: msg.sender.avatar
-        };
-    }
     return {
-        id: msg.sender,
-        name: "مستخدم",
-        avatar: null
+        id: msg.sender._id,
+        name: msg.sender.name || "مستخدم",
+        avatar: msg.sender.avatar
     };
 };
 
@@ -81,6 +77,7 @@ const ChatBox = memo(({
     onSend,
     onSearchUser,
     onSelectReceiver,
+    onTyping,
 }: ChatBoxProps) => {
     // ==========================================================================
     // State
@@ -101,9 +98,9 @@ const ChatBox = memo(({
     // ==========================================================================
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const typingTimeoutRef = useRef<NodeJS.Timeout>();
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mounted = useRef(true);
-    const searchTimeoutRef = useRef<NodeJS.Timeout>();
+    const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const messageIdsRef = useRef<Set<string>>(new Set());
     const messageKeysRef = useRef<Map<string, string>>(new Map());
 
@@ -161,8 +158,8 @@ const ChatBox = memo(({
     useEffect(() => {
         const handleNewMessage = (message: Message) => {
             if (!mounted.current) return;
-            const senderId = typeof message.sender === "object" ? message.sender._id : message.sender;
-            const msgReceiverId = typeof message.receiver === "object" ? message.receiver._id : message.receiver;
+            const senderId = message.sender._id;
+            const msgReceiverId = message.receiver._id;
             if (
                 (senderId === receiverId && msgReceiverId === currentUserId) ||
                 (senderId === currentUserId && msgReceiverId === receiverId)
@@ -186,8 +183,8 @@ const ChatBox = memo(({
     useEffect(() => {
         const handleMessageSent = (message: Message) => {
             if (!mounted.current) return;
-            const senderId = typeof message.sender === "object" ? message.sender._id : message.sender;
-            const msgReceiverId = typeof message.receiver === "object" ? message.receiver._id : message.receiver;
+            const senderId = message.sender._id;
+            const msgReceiverId = message.receiver._id;
             if (senderId === currentUserId && msgReceiverId === receiverId) {
                 setLocalMessages(prev => {
                     const tempMessageIndex = prev.findIndex(m => m._id.startsWith('temp-'));
@@ -238,8 +235,8 @@ const ChatBox = memo(({
         const tempMessage: Message = {
             _id: tempId,
             text: sanitizedText,
-            sender: currentUserId,
-            receiver: receiverId,
+            sender: toMessageUser(currentUserId),
+            receiver: toMessageUser(receiverId),
             createdAt: new Date().toISOString(),
             read: false
         };
@@ -251,6 +248,8 @@ const ChatBox = memo(({
         setLocalMessages(prev => [...prev, tempMessage]);
         setText("");
         setIsSending(true);
+
+        if (onTyping) onTyping(false);
 
         try {
             socketService.sendMessage(receiverId, tempMessage);
@@ -267,18 +266,22 @@ const ChatBox = memo(({
             setIsSending(false);
             socketService.emit("typing", { receiverId, isTyping: false });
         }
-    }, [text, receiverId, currentUserId, onSend, isSending, localMessages.length]);
+    }, [text, receiverId, currentUserId, onSend, isSending, localMessages.length, onTyping]);
 
     const handleTyping = useCallback((isTyping: boolean) => {
         if (!receiverId) return;
         socketService.emit("typing", { receiverId, isTyping });
+        
+        if (onTyping) onTyping(isTyping);
+
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         if (isTyping) {
             typingTimeoutRef.current = setTimeout(() => {
                 socketService.emit("typing", { receiverId, isTyping: false });
+                if (onTyping) onTyping(false);
             }, 2000);
         }
-    }, [receiverId]);
+    }, [receiverId, onTyping]);
 
     const handleSearchChange = useCallback(async (value: string) => {
         setSearchQuery(value);
@@ -314,22 +317,11 @@ const ChatBox = memo(({
     // دوال مساعدة للـ rendering
     // ==========================================================================
 
-    /**
-     * دالة لعرض النص مع تحويل الروابط إلى عناصر <a> قابلة للنقر
-     * تستخدم regex بسيط وآمن ولا تحتاج لمكتبات خارجية
-     */
     const renderMessageWithLinks = useCallback((content: string) => {
         if (!content) return null;
-        
-        // تعبير منتظم للبحث عن الروابط (http, https)
         const urlRegex = /(https?:\/\/[^\s]+)/g;
-        
-        // تقسيم النص حسب الروابط
         const parts = content.split(urlRegex);
-        
-        // إعادة تجميع القطع مع تحويل الروابط إلى عناصر <a>
         return parts.map((part, index) => {
-            // التحقق مما إذا كانت هذه القطعة تطابق نمط الرابط
             if (part.match(urlRegex)) {
                 return (
                     <a
@@ -338,13 +330,12 @@ const ChatBox = memo(({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="message-link"
-                        onClick={(e) => e.stopPropagation()} // منع تأثيرات غير مرغوب فيها
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {part}
                     </a>
                 );
             }
-            // النص العادي
             return <span key={index}>{part}</span>;
         });
     }, []);
@@ -497,7 +488,6 @@ const ChatBox = memo(({
                                         )}
 
                                         <div className={`message-bubble ${isOwn ? "own" : "other"}`}>
-                                            {/* ✅ عرض النص مع تحويل الروابط إلى عناصر قابلة للنقر */}
                                             <div className="message-text">
                                                 {renderMessageWithLinks(msg.text)}
                                             </div>

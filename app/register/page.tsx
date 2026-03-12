@@ -1,9 +1,15 @@
 "use client";
 
+// app/register/page.tsx
+// 📝 صفحة التسجيل - نسخة محسنة بالكامل مع معالجة الأنواع
+// @version 2.0.0
+// @lastUpdated 2026
+
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { User } from "@/types/User";
 import styles from "./page.module.css";
 
 export default function RegisterPage() {
@@ -55,12 +61,22 @@ export default function RegisterPage() {
     try {
       console.log('🔵 [Register] Starting registration...');
       
-      // استدعاء دالة التسجيل
+      // استدعاء دالة التسجيل - قد ترجع User مباشرة أو { user: User }
       const result = await register(name, email, password);
       
-      // التعامل مع النتيجة: قد تكون المستخدم مباشرة أو كائن يحتوي على user
-      const user = result?.user || result;
+      // ✅ معالجة آمنة للنتيجة: قد تكون User أو { user: User }
+      let user: User | null = null;
       
+      if (result && typeof result === 'object') {
+        // التحقق مما إذا كان result يحتوي على خاصية user (أي { user: User })
+        if ('user' in result && result.user && typeof result.user === 'object') {
+          user = result.user as User;
+        } else {
+          // افتراض أن result نفسه هو User
+          user = result as User;
+        }
+      }
+
       if (!user || !user._id) {
         throw new Error('لم يتم استلام بيانات المستخدم بشكل صحيح');
       }

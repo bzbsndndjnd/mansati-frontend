@@ -3,7 +3,7 @@
 
 // 🔐 AuthContext.tsx
 // مسؤول: إدارة حالة المصادقة بشكل آمن بالكامل عبر HttpOnly Cookies
-// @version 7.0.0 - متوافق تماماً مع backend الآمن
+// @version 7.0.2 - متوافق تماماً مع backend الآمن
 /* cSpell:enable */
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback, useRef } from "react";
@@ -23,7 +23,13 @@ import api from "@/services/api";
 
 interface AuthResponse {
   user: User;
-  // لا نستقبل توكن في الرد، لأنه مخزن في HttpOnly cookies
+}
+
+interface ApiResponse<T = any> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: any;
 }
 
 interface AuthContextType {
@@ -60,6 +66,25 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // ============================================================================
+// دوال مساعدة
+// ============================================================================
+
+/**
+ * استخراج البيانات من استجابة API مع التحقق من النجاح
+ */
+const extractApiData = <T,>(response: any): T | null => {
+  if (response?.data?.success && response.data.data) {
+    return response.data.data as T;
+  }
+  if (response?.data && !response.data.success) {
+    secureLog.warn('API response not successful', response.data.message);
+    return null;
+  }
+  secureLog.warn('Unexpected API response structure', response);
+  return null;
+};
+
+// ============================================================================
 // Auth Provider
 // ============================================================================
 
@@ -90,25 +115,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // محاولة تجديد التوكن (إذا كان موجوداً) والحصول على المستخدم
-        // يمكن استبدال هذا بطلب /api/users/me إذا كان متاحاً
         const refreshResponse = await api.post('/auth/refresh');
         if (refreshResponse.status === 200) {
-          // نجح التجديد، لدينا جلسة نشطة
-          // الآن نحتاج لجلب المستخدم (قد يكون الرد من refresh لا يعيد المستخدم)
-          // نفترض وجود نقطة نهاية /api/users/me
           try {
-            const meResponse = await api.get('/users/me');
-            if (meResponse.data?.success && meResponse.data.data) {
-              const userData = meResponse.data.data;
+            const meResponse = await api.get<ApiResponse<User>>('/users/me');
+            const userData = extractApiData<User>(meResponse);
+            if (userData) {
               setUser(userData);
-              localStorage.setItem('user', JSON.stringify(userData)); // تخزين مؤقت
+              localStorage.setItem('user', JSON.stringify(userData));
               await fetchUserPosts(userData._id);
               await loadFollowingStatus(userData._id);
             }
           } catch (meError) {
             secureLog.warn('تعذر جلب المستخدم بعد التجديد', meError);
-            // قد لا تكون نقطة /users/me موجودة، نحاول الحصول من الـ localStorage
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
               try {
@@ -141,7 +160,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (!userId) return;
     try {
       const response = await followService.getFollowing(userId, 1, 100);
-      const followingIds = new Set(response.data.map((u: any) => u._id));
+      const followingIds = new Set<string>(
+        (response.data || []).map((u: any) => u._id).filter((id: string) => id)
+      );
       if (mounted.current) setFollowing(followingIds);
     } catch (error) {
       secureLog.error('❌ فشل تحميل حالة المتابعة:', error);
@@ -158,14 +179,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       secureLog.log('🔵 محاولة تسجيل الدخول...');
-      const response = await api.post('/auth/login', { email, password });
-      const { user: userData } = response.data;
-
-      if (!userData) {
+      const response = await api.post<ApiResponse<{ user: User }>>('/auth/login', { email, password });
+      const data = extractApiData<{ user: User }>(response);
+      if (!data?.user) {
         throw new Error('لم يتم استلام بيانات المستخدم');
       }
+      const userData = data.user;
 
-      // تخزين بيانات المستخدم فقط (لا يوجد توكن)
       localStorage.setItem('user', JSON.stringify(userData));
 
       if (mounted.current) {
@@ -192,12 +212,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       secureLog.log('🔵 محاولة إنشاء حساب...');
-      const response = await api.post('/auth/register', { name, email, password });
-      const { user: userData } = response.data;
-
-      if (!userData) {
+      const response = await api.post<ApiResponse<{ user: User }>>('/auth/register', { name, email, password });
+      const data = extractApiData<{ user: User }>(response);
+      if (!data?.user) {
         throw new Error('لم يتم استلام بيانات المستخدم');
       }
+      const userData = data.user;
 
       localStorage.setItem('user', JSON.stringify(userData));
 
@@ -247,7 +267,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [user?._id]);
 
   // ==========================================================================
-  // المنشورات (بدون تغيير)
+  // المنشورات
   // ==========================================================================
 
   const fetchUserPosts = useCallback(async (userId: string, force = false) => {
@@ -322,7 +342,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ==========================================================================
-  // المتابعة (بدون تغيير)
+  // المتابعة
   // ==========================================================================
 
   const followUser = useCallback(async (userId: string) => {

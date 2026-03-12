@@ -1,63 +1,81 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import adminService from "../../services/adminService";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import adminService, { DashboardStats } from "@/services/adminService";
 import StatsCards from "@/app/admin/StatsCards";
 import RecentUsers from "@/components/admin/RecentUsers";
 import RecentPosts from "@/components/admin/RecentPosts";
 import SystemHealth from "@/components/admin/SystemHealth";
+import { secureLog } from "@/utils/security";
 import styles from "./page.module.css";
 
-// 1. تعريف واجهة البيانات بشكل دقيق لحل مشكلة الـ Types
-interface Admin {
+// ============================================================================
+// أنواع البيانات (نستخدم الأنواع المستوردة من adminService)
+// ============================================================================
+
+interface AdminProfile {
   _id: string;
   name: string;
   email: string;
   avatar?: string;
-  role: string; // تأكدنا أنها string وليست undefined
+  role: string;
 }
 
-// تعريف واجهة الإحصائيات (استبدلها بالقيم الفعلية لديك إذا كانت تختلف)
-interface DashboardStats {
-  usersCount?: number;
-  postsCount?: number;
-  [key: string]: any; 
-}
+// ============================================================================
+// المكون الرئيسي
+// ============================================================================
 
 export default function AdminDashboard() {
-  // 2. تصحيح الـ useState لتجنب خطأ SetStateAction<null>
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // حالات الحالة
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [admin, setAdmin] = useState<AdminProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 3. دالة معالجة رابط الصورة لضمان ظهورها في كل مكان
-  const getAvatarUrl = (path?: string) => {
+  // التحقق من صلاحية الأدمن
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      router.push(`/profile/${user._id}`);
+    }
+  }, [user, router]);
+
+  // دالة معالجة رابط الصورة
+  const getAvatarUrl = (path?: string): string => {
     if (!path) return "/default-avatar.png";
     if (path.startsWith("http")) return path;
-    const API_BASE = "http://localhost:5000"; // تأكد من مطابقة رابط سيرفرك
-    return `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    // إزالة الشرطة المكررة
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `${API_BASE}${cleanPath}`;
   };
 
+  // تحميل البيانات
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
+        setError(null);
+
+        // جلب الإحصائيات وبيانات الأدمن معاً
         const [statsData, adminData] = await Promise.all([
           adminService.getStats(),
-          adminService.getCurrentAdmin().catch(() => null),
+          adminService.getCurrentAdmin().catch(() => null), // قد لا يكون متاحاً في كل البيئات
         ]);
 
-        // 4. تحويل البيانات (Type Casting) لضمان توافق الأنواع
-        setStats(statsData as DashboardStats);
+        setStats(statsData);
         
         if (adminData) {
-            setAdmin(adminData as Admin);
+          setAdmin(adminData as AdminProfile);
         }
-        
-        setError(null);
+
+        secureLog.info("Admin dashboard data loaded successfully");
       } catch (err: any) {
-        console.error("❌ Error loading dashboard:", err);
+        secureLog.error("Error loading admin dashboard", err);
         setError(err.message || "حدث خطأ أثناء تحميل البيانات");
       } finally {
         setLoading(false);
@@ -70,8 +88,8 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
-        <div className={styles.loadingSpinner}></div>
-        <p>جاري تحميل البيانات...</p>
+        <div className={styles.spinner}></div>
+        <p>جاري تحميل لوحة التحكم...</p>
       </div>
     );
   }
@@ -79,36 +97,44 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className={styles.errorContainer}>
-        <h2>حدث خطأ</h2>
+        <h2>⚠️ حدث خطأ</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>إعادة المحاولة</button>
+        <button onClick={() => window.location.reload()} className={styles.retryButton}>
+          إعادة المحاولة
+        </button>
       </div>
     );
   }
 
   return (
     <div className={styles.dashboard}>
+      {/* رأس الصفحة مع معلومات الأدمن */}
       {admin && (
-        <div className={styles.adminProfile}>
-          <img
-            src={getAvatarUrl(admin.avatar)}
-            alt={admin.name}
-            className={styles.avatar}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/default-avatar.png";
-            }}
-          />
-          <div className={styles.adminInfo}>
-            <h2 className={styles.adminName}>{admin.name}</h2>
-            <p className={styles.adminEmail}>{admin.email}</p>
+        <div className={styles.adminHeader}>
+          <div className={styles.adminProfile}>
+            <img
+              src={getAvatarUrl(admin.avatar)}
+              alt={admin.name}
+              className={styles.avatar}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/default-avatar.png";
+              }}
+            />
+            <div className={styles.adminInfo}>
+              <h2 className={styles.adminName}>{admin.name}</h2>
+              <p className={styles.adminEmail}>{admin.email}</p>
+              <span className={styles.adminRole}>مدير النظام</span>
+            </div>
           </div>
         </div>
       )}
 
-      <h1 className={styles.title}>لوحة التحكم</h1>
+      <h1 className={styles.title}>📊 لوحة التحكم</h1>
 
+      {/* بطاقات الإحصائيات */}
       <StatsCards stats={stats} />
 
+      {/* الشبكة: آخر المستخدمين والمنشورات */}
       <div className={styles.grid}>
         <div className={styles.gridItem}>
           <RecentUsers />
@@ -118,6 +144,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* حالة النظام */}
       <SystemHealth />
     </div>
   );

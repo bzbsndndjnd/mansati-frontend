@@ -1,6 +1,6 @@
 // utils/security.ts
 // 🛡️ مسؤول: أدوات الأمان والتحقق - محدث ومتوافق مع الاستخدامات الحالية
-// @version 2.0.0
+// @version 2.1.0
 // @lastUpdated 2026
 
 /**
@@ -91,7 +91,6 @@ export const isTokenValid = (token: string): boolean => {
 
 /**
  * تسجيل آمن (بدون كشف معلومات حساسة) - متوافق مع الاستخدامات الحالية
- * يحتوي على دالة log التي كانت مفقودة وتسبب الخطأ
  */
 export const secureLog = {
   log: (message: string, ...args: any[]) => {
@@ -128,4 +127,37 @@ export const isValidToken = (token: string): boolean => {
 export const generateCsrfToken = (): string => {
   return Math.random().toString(36).substring(2, 15) + 
          Math.random().toString(36).substring(2, 15);
+};
+
+/**
+ * التحقق من صحة نطاق التواريخ
+ * @param startDate تاريخ البداية
+ * @param endDate تاريخ النهاية
+ * @returns boolean صحيح إذا كان النطاق صالحاً
+ */
+export const validateDateRange = (startDate: string, endDate: string): boolean => {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // التحقق من صحة التاريخين
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return false;
+    }
+    
+    // تاريخ البداية يجب أن يكون قبل أو يساوي تاريخ النهاية
+    if (start > end) {
+      return false;
+    }
+    
+    // منع النطاقات الكبيرة جداً (أكثر من سنة واحدة)
+    const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
+    if (end.getTime() - start.getTime() > oneYearInMs) {
+      return false;
+    }
+    
+    return true;
+  } catch {
+    return false;
+  }
 };

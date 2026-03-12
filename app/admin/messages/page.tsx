@@ -2,13 +2,13 @@
 
 // app/admin/messages/page.tsx
 // 💬 إدارة الرسائل - نسخة محسنة مع عرض جميع المحادثات
-// @version 3.0.0
-// @lastUpdated 2026
+// @version 3.1.0
+// @lastUpdated 2026-03-12
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import adminService from "@/services/adminService";
+import adminService, { Conversation, MessageDetail, MessagesStats } from "@/services/adminService";
 import { secureLog, sanitizeImageUrl } from "@/utils/security";
 import {
   FaSearch, FaTrash, FaEye, FaUserCircle, FaSync,
@@ -19,42 +19,11 @@ import {
 import styles from "./page.module.css";
 
 // ============================================================================
-// أنواع البيانات
+// أنواع البيانات (لم نعد بحاجة لتعريف Conversation هنا)
 // ============================================================================
 
-interface Message {
-  _id: string;
-  sender: {
-    _id: string;
-    name: string;
-    avatar?: string;
-    role?: string;
-  };
-  receiver: {
-    _id: string;
-    name: string;
-    avatar?: string;
-    role?: string;
-  };
-  text: string;
-  createdAt: string;
-  read: boolean;
-  readAt?: string;
-}
-
-interface Conversation {
-  _id: string;
-  participants: {
-    _id: string;
-    name: string;
-    avatar?: string;
-    role?: string;
-  }[];
-  lastMessage: Message;
-  unreadCount: number;
-  messagesCount: number;
-  createdAt: string;
-  updatedAt: string;
+interface Message extends MessageDetail {
+  // يمكن إضافة خصائص إضافية إذا لزم الأمر
 }
 
 // ============================================================================
@@ -73,11 +42,12 @@ export default function AdminMessagesPage() {
   const [selectedConv, setSelectedConv] = useState<string | null>(null);
   const [selectedMsgs, setSelectedMsgs] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
-  const [stats, setStats] = useState({ 
-    total: 0, 
-    unread: 0, 
-    conversations: 0,
-    today: 0 
+  const [stats, setStats] = useState<MessagesStats>({ 
+    totalMessages: 0, 
+    unreadMessages: 0, 
+    totalConversations: 0,
+    messagesToday: 0,
+    activeConversations: 0
   });
   const [expandedMsg, setExpandedMsg] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -100,12 +70,7 @@ export default function AdminMessagesPage() {
   const loadStats = useCallback(async () => {
     try {
       const statsData = await adminService.getMessagesStats();
-      setStats({
-        total: statsData.totalMessages,
-        unread: statsData.unreadMessages,
-        conversations: statsData.totalConversations,
-        today: statsData.messagesToday
-      });
+      setStats(statsData);
     } catch (err) {
       console.error('Failed to load stats:', err);
     }
@@ -157,7 +122,7 @@ export default function AdminMessagesPage() {
         limit: 100
       });
       
-      setMessages(response.data);
+      setMessages(response.data as Message[]);
       
     } catch (err) {
       console.error('❌ Failed to load messages:', err);
@@ -366,19 +331,19 @@ export default function AdminMessagesPage() {
           <div className={styles.stats}>
             <span className={styles.stat} title="إجمالي الرسائل">
               <FaEnvelope />
-              {stats.total.toLocaleString()}
+              {stats.totalMessages.toLocaleString()}
             </span>
             <span className={styles.stat} title="المحادثات النشطة">
               <FaComments />
-              {stats.conversations}
+              {stats.totalConversations}
             </span>
             <span className={styles.stat} title="الرسائل غير المقروءة">
               <FaEnvelopeOpen />
-              {stats.unread}
+              {stats.unreadMessages}
             </span>
             <span className={styles.stat} title="رسائل اليوم">
               <FaCalendarAlt />
-              {stats.today}
+              {stats.messagesToday}
             </span>
           </div>
           
@@ -515,9 +480,9 @@ export default function AdminMessagesPage() {
                               {lastMsg.sender.name}: 
                             </span>
                             <span className={styles.messagePreview}>
-                              {lastMsg.text.length > 50
-                                ? `${lastMsg.text.substring(0, 50)}...`
-                                : lastMsg.text}
+                              {lastMsg.content.length > 50
+                                ? `${lastMsg.content.substring(0, 50)}...`
+                                : lastMsg.content}
                             </span>
                           </>
                         )}
@@ -584,7 +549,7 @@ export default function AdminMessagesPage() {
                         </h2>
                         <p className={styles.convStats}>
                           {conv.messagesCount || 0} رسالة • 
-                          تم إنشاؤها {formatDate(conv.createdAt)}
+                          آخر تحديث {formatDate(conv.updatedAt)}
                         </p>
                       </div>
                     </div>
@@ -675,9 +640,9 @@ export default function AdminMessagesPage() {
                               onClick={() => toggleExpand(msg._id)}
                             >
                               <p className={isExpanded ? styles.messageExpanded : styles.messagePreview}>
-                                {msg.text}
+                                {msg.content}
                               </p>
-                              {msg.text.length > 100 && !isExpanded && (
+                              {msg.content.length > 100 && !isExpanded && (
                                 <span className={styles.expandHint}>
                                   اضغط لعرض المزيد
                                 </span>

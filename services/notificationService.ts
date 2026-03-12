@@ -1,8 +1,7 @@
-/**
- * 🔔 خدمة الإشعارات - نسخة محسنة
- * @version 2.1.0
- * @lastUpdated 2026
- */
+// services/notificationService.ts
+// 🔔 خدمة الإشعارات - نسخة محسنة مع ApiResponse
+// @version 2.2.0
+// @lastUpdated 2026
 
 import api from "./api";
 import type { 
@@ -17,6 +16,13 @@ import { secureLog } from "@/utils/security";
 // أنواع إضافية للخدمة
 // ============================================================================
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  pagination?: any;
+}
+
 export interface CreateNotificationData {
     recipient: string;
     type: NotificationType;
@@ -27,6 +33,22 @@ export interface CreateNotificationData {
     priority?: 'low' | 'normal' | 'high' | 'urgent';
     actionUrl?: string;
 }
+
+// ============================================================================
+// دوال مساعدة
+// ============================================================================
+
+const extractData = <T>(response: any, defaultValue: T): T => {
+  if (!response) return defaultValue;
+  if (response?.success === true && response.data !== undefined) {
+    return response.data as T;
+  }
+  if (Array.isArray(response) || (typeof response === 'object' && response !== null)) {
+    return response as T;
+  }
+  secureLog.warn('Unexpected response structure', response);
+  return defaultValue;
+};
 
 // ============================================================================
 // خدمة الإشعارات
@@ -40,58 +62,35 @@ const notificationService = {
         try {
             console.log(`🔔 [NotificationService] Fetching page ${page}`);
             
-            const response = await api.get(
+            const response = await api.get<ApiResponse<NotificationsResponse['data']>>(
                 `/notifications?page=${page}&limit=${limit}`
             );
             
             console.log('🔔 [NotificationService] Raw response:', response.data);
 
-            // ✅ التأكد من وجود البيانات بالهيكل الصحيح
-            if (!response.data || !response.data.data) {
-                console.warn('🔔 [NotificationService] Unexpected response structure:', response.data);
-                
-                // إرجاع استجابة فارغة
-                return {
-                    success: false,
-                    data: {
-                        notifications: [],
-                        stats: { unreadCount: 0, total: 0 }
-                    },
-                    pagination: {
-                        page,
-                        limit,
-                        total: 0,
-                        pages: 0,
-                        hasMore: false
-                    }
-                };
-            }
+            // استخراج البيانات
+            const data = extractData<NotificationsResponse['data']>(response.data, {
+                notifications: [],
+                stats: { unreadCount: 0, total: 0 }
+            });
 
-            // ✅ استخراج البيانات مباشرة دون تغيير الهيكل
-            const result: NotificationsResponse = {
-                success: response.data.success || true,
-                data: {
-                    notifications: response.data.data.notifications || [],
-                    stats: response.data.data.stats || { unreadCount: 0, total: 0 }
-                },
-                pagination: response.data.pagination || {
-                    page,
-                    limit,
-                    total: 0,
-                    pages: 0,
-                    hasMore: false
-                }
+            const pagination = response.data?.pagination || {
+                page,
+                limit,
+                total: 0,
+                pages: 0,
+                hasMore: false
             };
-            
-            console.log(`🔔 [NotificationService] Processed ${result.data.notifications.length} notifications`);
-            
-            return result;
-            
+
+            return {
+                success: response.data?.success || true,
+                data,
+                pagination
+            };
         } catch (error) {
             secureLog.error('❌ فشل جلب الإشعارات');
             console.error('🔔 [NotificationService] Error:', error);
             
-            // إرجاع استجابة فارغة في حالة الخطأ
             return {
                 success: false,
                 data: {
@@ -114,19 +113,9 @@ const notificationService = {
      */
     async getUnreadCount(): Promise<number> {
         try {
-            const response = await api.get('/notifications/unread-count');
-            
-            console.log('🔔 [NotificationService] Unread count response:', response.data);
-            
-            // ✅ التعامل مع الهياكل المختلفة
-            if (response.data?.data?.count !== undefined) {
-                return response.data.data.count;
-            } else if (response.data?.count !== undefined) {
-                return response.data.count;
-            }
-            
-            return 0;
-            
+            const response = await api.get<ApiResponse<{ count: number }>>('/notifications/unread-count');
+            const data = extractData<{ count: number }>(response.data, { count: 0 });
+            return data.count || 0;
         } catch (error) {
             secureLog.error('❌ فشل جلب عدد الإشعارات');
             console.error('🔔 [NotificationService] Unread count error:', error);
@@ -139,17 +128,10 @@ const notificationService = {
      */
     async markAsRead(notificationId: string): Promise<Notification> {
         try {
-            const response = await api.patch(`/notifications/${notificationId}/read`);
-            
-            console.log('🔔 [NotificationService] Mark as read response:', response.data);
-            
-            // ✅ استخراج الإشعار المحدث
-            if (response.data?.data) {
-                return response.data.data;
-            }
-            
-            throw new Error('Invalid response structure');
-            
+            const response = await api.patch<ApiResponse<Notification>>(`/notifications/${notificationId}/read`);
+            const notification = extractData<Notification>(response.data, null as any);
+            if (!notification) throw new Error('Invalid response structure');
+            return notification;
         } catch (error) {
             secureLog.error('❌ فشل تحديث الإشعار');
             console.error('🔔 [NotificationService] Mark as read error:', error);
@@ -190,16 +172,10 @@ const notificationService = {
      */
     async createNotification(data: CreateNotificationData): Promise<Notification> {
         try {
-            const response = await api.post('/notifications', data);
-            
-            console.log('🔔 [NotificationService] Notification created:', response.data);
-            
-            if (response.data?.data) {
-                return response.data.data;
-            }
-            
-            throw new Error('Invalid response structure');
-            
+            const response = await api.post<ApiResponse<Notification>>('/notifications', data);
+            const notification = extractData<Notification>(response.data, null as any);
+            if (!notification) throw new Error('Invalid response structure');
+            return notification;
         } catch (error) {
             secureLog.error('❌ فشل إنشاء الإشعار');
             console.error('🔔 [NotificationService] Create error:', error);

@@ -2,7 +2,7 @@
 
 // app/admin/settings/page.tsx
 // ⚙️ إعدادات النظام - نسخة احترافية كاملة
-// @version 1.0.0
+// @version 1.0.1
 // @lastUpdated 2026
 
 import { useState, useEffect, useCallback } from "react";
@@ -94,6 +94,7 @@ interface SettingField {
   placeholder?: string;
   help?: string;
   validation?: (value: any) => boolean;
+  disabled?: boolean; // إضافة خاصية disabled
 }
 
 // ============================================================================
@@ -263,7 +264,7 @@ export default function SettingsPage() {
         return newErrors;
       });
     }
-  }, []);
+  }, [validationErrors]);
 
   // التحقق من صحة القيمة
   const validateField = useCallback((section: string, field: SettingField, value: any): boolean => {
@@ -568,7 +569,7 @@ export default function SettingsPage() {
                             <button
                               onClick={() => updateSetting(section.id as keyof Settings, field.id, !value)}
                               className={`${styles.toggleButton} ${value ? styles.active : ''}`}
-                              disabled={saving}
+                              disabled={saving || field.disabled}
                             >
                               <span className={styles.toggleHandle}></span>
                               <span className={styles.toggleLabel}>
@@ -599,37 +600,57 @@ export default function SettingsPage() {
                             disabled={saving || field.disabled}
                             rows={4}
                           />
-                        ) : field.type === 'color' ? (
+                                                ) : field.type === 'color' ? (
                           <div className={styles.colorPicker}>
                             <input
                               type="color"
-                              value={value}
+                              value={value || '#000000'}
                               onChange={(e) => updateSetting(section.id as keyof Settings, field.id, e.target.value)}
                               className={styles.colorInput}
                               disabled={saving || field.disabled}
                             />
                             <span className={styles.colorValue}>{value}</span>
                           </div>
-                        ) : (
+                        ) : field.type === 'number' ? (
                           <input
-                            type={field.type}
+                            type="number"
+                            value={value || ''}
+                            onChange={(e) => updateSetting(section.id as keyof Settings, field.id, e.target.valueAsNumber)}
+                            onBlur={() => validateField(section.id, field, value)}
+                            placeholder={field.placeholder}
+                            className={`${styles.input} ${fieldError ? styles.error : ''}`}
+                            disabled={saving || field.disabled}
+                            min={0}
+                          />
+                        ) : field.type === 'email' ? (
+                          <input
+                            type="email"
                             value={value || ''}
                             onChange={(e) => updateSetting(section.id as keyof Settings, field.id, e.target.value)}
                             onBlur={() => validateField(section.id, field, value)}
                             placeholder={field.placeholder}
                             className={`${styles.input} ${fieldError ? styles.error : ''}`}
                             disabled={saving || field.disabled}
-                            min={field.type === 'number' ? 0 : undefined}
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={value || ''}
+                            onChange={(e) => updateSetting(section.id as keyof Settings, field.id, e.target.value)}
+                            onBlur={() => validateField(section.id, field, value)}
+                            placeholder={field.placeholder}
+                            className={`${styles.input} ${fieldError ? styles.error : ''}`}
+                            disabled={saving || field.disabled}
                           />
                         )}
-                        
+
                         {fieldError && (
                           <div className={styles.fieldError}>
                             <FaExclamationTriangle />
                             <span>{fieldError}</span>
                           </div>
                         )}
-                        
+
                         {field.help && !fieldError && (
                           <div className={styles.fieldHelp}>{field.help}</div>
                         )}

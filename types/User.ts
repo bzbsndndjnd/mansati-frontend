@@ -1,247 +1,165 @@
 // types/User.ts
-// 👤 أنواع بيانات المستخدم - نسخة محسنة بالكامل
-// الإصدار: 3.0.0 | آخر تحديث: 2026
+// 👤 أنواع بيانات المستخدم - نسخة موحدة وكاملة
+// @version 5.0.0
+// @lastUpdated 2026
+
+// ============================================================================
+// الأنواع الأساسية
+// ============================================================================
+
+export type UserRole = 'user' | 'moderator' | 'admin';
+export type Gender = 'male' | 'female' | 'other';
+
+// ============================================================================
+// واجهة المستخدم الرئيسية (كل الحقول إلزامية أو اختيارية بوضوح)
+// ============================================================================
 
 export interface User {
-  // ========================================================================
-  // الحقول الأساسية (Required)
-  // ========================================================================
-  _id: string;           // معرف فريد للمستخدم
-  name: string;          // اسم المستخدم
-  email: string;         // البريد الإلكتروني
-
-  // ========================================================================
-  // الصور والوسائط (Optional)
-  // ========================================================================
-  avatar?: string;       // الصورة الرمزية
-  coverPhoto?: string;   // ✅ صورة الغلاف (جديد)
-  avatarPublicId?: string; // ✅ معرف الصورة في Cloudinary (للحذف)
-
-  // ========================================================================
-  // المصادقة والأمان (Optional)
-  // ========================================================================
-  token?: string;        // توكن المصادقة
-  role?: 'user' | 'admin' | 'moderator'; // صلاحيات المستخدم
-  isActive?: boolean;    // حالة الحساب (نشط/معطل)
-  isVerified?: boolean;  // ✅ هل البريد الإلكتروني مؤكد؟ (جديد)
-  lastLogin?: string;    // آخر تسجيل دخول
-  lastIp?: string;       // ✅ آخر IP (جديد)
-
-  // ========================================================================
-  // إحصائيات المتابعة (NEW) - مهمة جداً للمتابعة
-  // ========================================================================
-  followersCount?: number;   // ✅ عدد المتابعين
-  followingCount?: number;   // ✅ عدد الذين يتابعهم
-  postsCount?: number;       // ✅ عدد المنشورات
-  friendsCount?: number;     // ✅ عدد الأصدقاء (اختياري)
-
-  // ========================================================================
-  // العلاقات (Relations)
-  // ========================================================================
-  followers?: User[];        // ✅ قائمة المتابعين (للـ populate)
-  following?: User[];        // ✅ قائمة المتابَعين (للـ populate)
-  
-  // ========================================================================
-  // معلومات إضافية (Optional)
-  // ========================================================================
-  bio?: string;           // ✅ نبذة عن المستخدم
-  location?: string;      // ✅ الموقع
-  website?: string;       // ✅ الموقع الشخصي
-  phone?: string;         // ✅ رقم الهاتف
-  gender?: 'male' | 'female' | 'other'; // ✅ الجنس
-  birthDate?: string;     // ✅ تاريخ الميلاد
-
-  // ========================================================================
-  // التواريخ (Timestamps)
-  // ========================================================================
-  createdAt?: string;     // تاريخ الإنشاء
-  updatedAt?: string;     // آخر تحديث
-  deletedAt?: string;     // ✅ تاريخ الحذف (للحسابات المحذوفة)
-}
-
-// ========================================================================
-// أنواع مساعدة (Utility Types)
-// ========================================================================
-
-/**
- * بيانات المستخدم للتحديث (كل الحقول اختيارية)
- */
-export interface UserUpdateData {
-  name?: string;
-  email?: string;
+  _id: string;
+  name: string;
+  email: string;                // إلزامي
+  role: UserRole;               // إلزامي
+  isActive: boolean;            // إلزامي
   avatar?: string;
   coverPhoto?: string;
+  avatarPublicId?: string;
+  coverPublicId?: string;
   bio?: string;
   location?: string;
   website?: string;
   phone?: string;
-  gender?: 'male' | 'female' | 'other';
+  gender?: Gender;
   birthDate?: string;
+  followersCount?: number;
+  followingCount?: number;
+  postsCount?: number;
+  isVerified?: boolean;
+  lastLogin?: string;
+  lastIp?: string;
+  loginAttempts?: number;
+  lockUntil?: string;
+  createdAt: string;            // إلزامي
+  updatedAt?: string;
+  deletedAt?: string;
 }
 
-/**
- * بيانات المستخدم للتسجيل
- */
-export interface UserRegistrationData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
+// ============================================================================
+// نوع المستخدم مع حالة المتابعة (يُستخدم في القوائم)
+// ============================================================================
+
+export interface UserWithFollow extends User {
+  isFollowing: boolean;
+  isOnline?: boolean;
 }
 
-/**
- * بيانات تسجيل الدخول
- */
-export interface UserLoginData {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
+// ============================================================================
+// نتيجة البحث عن مستخدمين (قد يكون لها حقول أقل)
+// ============================================================================
 
-/**
- * حالة المتابعة
- */
-export interface FollowStatus {
-  isFollowing: boolean;      // هل يتابع المستخدم الحالي هذا المستخدم؟
-  followersCount: number;    // عدد المتابعين
-  followingCount: number;    // عدد المتابَعين
-}
-
-/**
- * إحصائيات المستخدم
- */
-export interface UserStats {
-  postsCount: number;
-  followersCount: number;
-  followingCount: number;
-  friendsCount?: number;
-}
-
-/**
- * نتائج البحث عن مستخدمين
- */
-export interface UserSearchResult {
+export interface SearchUserResult {
   _id: string;
   name: string;
   avatar?: string;
-  email?: string;
   followersCount?: number;
-  isFollowing?: boolean;
+  followingCount?: number;
+  postsCount?: number;
+  // يمكن إضافة email إذا كان متوفراً في البحث
+  email?: string;
 }
 
-// ========================================================================
-// دوال مساعدة (Helper Functions)
-// ========================================================================
+// ============================================================================
+// دوال تحويل آمنة
+// ============================================================================
 
 /**
- * التحقق من أن المستخدم هو مسؤول
+ * تحويل أي كائن قادم من API إلى كيان User صالح
  */
-export function isAdmin(user: User | null): boolean {
-  return user?.role === 'admin';
-}
-
-/**
- * التحقق من أن المستخدم هو مشرف
- */
-export function isModerator(user: User | null): boolean {
-  return user?.role === 'moderator' || user?.role === 'admin';
-}
-
-/**
- * التحقق من أن المستخدم نشط
- */
-export function isActiveUser(user: User | null): boolean {
-  return user?.isActive !== false;
-}
-
-/**
- * الحصول على اسم المستخدم للعرض (معالجة القيم الفارغة)
- */
-export function getDisplayName(user: User | null): string {
-  if (!user) return 'مستخدم';
-  return user.name || 'مستخدم';
-}
-
-/**
- * الحصول على الصورة الرمزية للمستخدم (معالجة القيم الفارغة)
- */
-export function getUserAvatar(user: User | null): string | null {
-  if (!user) return null;
-  return user.avatar || null;
-}
-
-/**
- * تنسيق تاريخ انضمام المستخدم
- */
-export function formatJoinDate(user: User | null): string {
-  if (!user?.createdAt) return 'غير معروف';
-  
-  try {
-    const date = new Date(user.createdAt);
-    return date.toLocaleDateString('ar-EG', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  } catch {
-    return 'غير معروف';
-  }
-}
-
-/**
- * التحقق من اكتمال ملف المستخدم
- */
-export function isProfileComplete(user: User | null): boolean {
-  if (!user) return false;
-  
-  // الحقول الأساسية المطلوبة
-  const requiredFields = {
-    hasName: !!user.name,
-    hasEmail: !!user.email,
-    hasAvatar: !!user.avatar,
-    hasBio: !!user.bio,
-    hasLocation: !!user.location
+export function toUser(data: any): User {
+  return {
+    _id: data?._id || '',
+    name: data?.name || '',
+    email: data?.email || '',
+    role: data?.role || 'user',
+    isActive: data?.isActive ?? true,
+    avatar: data?.avatar,
+    coverPhoto: data?.coverPhoto,
+    avatarPublicId: data?.avatarPublicId,
+    coverPublicId: data?.coverPublicId,
+    bio: data?.bio,
+    location: data?.location,
+    website: data?.website,
+    phone: data?.phone,
+    gender: data?.gender,
+    birthDate: data?.birthDate,
+    followersCount: data?.followersCount || 0,
+    followingCount: data?.followingCount || 0,
+    postsCount: data?.postsCount || 0,
+    isVerified: data?.isVerified ?? false,
+    lastLogin: data?.lastLogin,
+    lastIp: data?.lastIp,
+    loginAttempts: data?.loginAttempts,
+    lockUntil: data?.lockUntil,
+    createdAt: data?.createdAt || new Date().toISOString(),
+    updatedAt: data?.updatedAt,
+    deletedAt: data?.deletedAt,
   };
-  
-  // يمكن تعديل هذه النسبة حسب متطلبات التطبيق
-  const completedFields = Object.values(requiredFields).filter(Boolean).length;
-  const totalFields = Object.keys(requiredFields).length;
-  
-  return completedFields >= Math.ceil(totalFields / 2); // 50% على الأقل
 }
 
-// ========================================================================
-// ثوابت (Constants)
-// ========================================================================
+/**
+ * تحويل مصفوفة من البيانات إلى مصفوفة User
+ */
+export function toUserArray(data: any[]): User[] {
+  if (!Array.isArray(data)) return [];
+  return data.map(item => toUser(item));
+}
 
 /**
- * صلاحيات المستخدم المتاحة
+ * تحويل كائن User إلى UserWithFollow (مع إضافة isFollowing و isOnline)
  */
-export const USER_ROLES = {
-  USER: 'user',
-  MODERATOR: 'moderator',
-  ADMIN: 'admin'
-} as const;
+export function toUserWithFollow(user: User, isFollowing: boolean, isOnline: boolean = false): UserWithFollow {
+  return {
+    ...user,
+    isFollowing,
+    isOnline,
+  };
+}
 
 /**
- * أنواع المستخدمين للفلترة
+ * تحويل SearchUserResult إلى UserWithFollow (باستخدام بيانات إضافية من User كاملة إذا وجدت)
  */
-export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
-
-/**
- * ألوان الصلاحيات (للواجهة)
- */
-export const ROLE_COLORS: Record<UserRole, string> = {
-  user: '#6b7280',      // رمادي
-  moderator: '#f59e0b',  // برتقالي
-  admin: '#ef4444'       // أحمر
-};
-
-/**
- * أسماء الصلاحيات بالعربية
- */
-export const ROLE_NAMES: Record<UserRole, string> = {
-  user: 'مستخدم',
-  moderator: 'مشرف',
-  admin: 'مسؤول'
-};
+export function searchResultToUserWithFollow(
+  result: SearchUserResult,
+  fullUser?: User,
+  isFollowing: boolean = false,
+  isOnline: boolean = false
+): UserWithFollow {
+  const base = fullUser || result;
+  return {
+    _id: result._id,
+    name: result.name,
+    email: fullUser?.email || result.email || '',
+    role: fullUser?.role || 'user',
+    isActive: fullUser?.isActive ?? true,
+    avatar: result.avatar || fullUser?.avatar,
+    coverPhoto: fullUser?.coverPhoto,
+    bio: fullUser?.bio,
+    location: fullUser?.location,
+    website: fullUser?.website,
+    phone: fullUser?.phone,
+    gender: fullUser?.gender,
+    birthDate: fullUser?.birthDate,
+    followersCount: result.followersCount ?? fullUser?.followersCount ?? 0,
+    followingCount: result.followingCount ?? fullUser?.followingCount ?? 0,
+    postsCount: result.postsCount ?? fullUser?.postsCount ?? 0,
+    isVerified: fullUser?.isVerified ?? false,
+    lastLogin: fullUser?.lastLogin,
+    lastIp: fullUser?.lastIp,
+    loginAttempts: fullUser?.loginAttempts,
+    lockUntil: fullUser?.lockUntil,
+    createdAt: fullUser?.createdAt || new Date().toISOString(),
+    updatedAt: fullUser?.updatedAt,
+    deletedAt: fullUser?.deletedAt,
+    isFollowing,
+    isOnline,
+  };
+}
